@@ -31,7 +31,7 @@ counter=0
 array=()
 array_Merge=()                  #
 
-
+cd $output_dir
 
 while [[ $end_of_file == 0 ]]
 do
