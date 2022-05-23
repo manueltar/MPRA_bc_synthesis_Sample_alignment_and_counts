@@ -170,7 +170,10 @@ do
         echo -n "" > $outfile_merging
          name_merging=$(echo "$batch""_""$type""_""$name_sample""_job")
 	 flash2_output=$(echo "$output_dir""$master_prefix"".extendedFrags.fastq.gz")
-	
+	 flash2_not_combined_1=$(echo "$output_dir""$master_prefix"".notCombined_1.fastq.gz")
+ 	 flash2_not_combined_2=$(echo "$output_dir""$master_prefix"".notCombined_2.fastq.gz")
+
+
 	
 	bsub -G team151 -o $outfile_merging -q $queue -n$pc -w"done($name_Extracting_UMI_R1) && done($name_Extracting_UMI_R3)" -J $name_merging -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
         "flash2 -z --output-prefix=$master_prefix -t 1 -r 11 -f 11 -s 2 -m 10 -x 0.122 $output_processed_R1 $output_processed_R3"
@@ -180,7 +183,7 @@ do
         name_CLEANING=$(echo "$batch""_""$type""_""$name_sample""_job")
 
         bsub -G team151 -o $outfile_merging -M 4000  -w"done($name_merging)" -J $name_CLEANING  -R"select[mem>=4000] rusage[mem=4000] span[hosts=1]" -n1 -q $queue -- \
-        "rm $R1 $R2 $output_trimmomatic_r3 $R3"
+        "rm $R1 $R2 $output_trimmomatic_r3 $R3 $flash2_not_combined_1 $flash2_not_combined_2"
 
 
 #######################################################################################################################################################
@@ -431,8 +434,7 @@ do
 
 
     bsub -G team151 -o $outfile_clean_3 -q $queue -n$pc -w"done($name_bash_unique_DEDUPLICATED_COMPRESS) && done($name_bash_unique_COMPRESS)" -J $name_clean_3 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-    "rm $output_umi_tools_deduplicated_sorted $output_umi_summary"
-
+    "rm $output_umi_tools_deduplicated_sorted $output_umi_summary $output_bwa_bam $output_umi_tools_group $output_umi_summary"
 
 
 	echo "------------------------------------------->$counter\n"
