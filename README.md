@@ -13,7 +13,7 @@ example:
 nohup bash ~/Scripts/MPRA_programmed_pipeline/Sample_processing.sh /nfs/team151_data03/MPRA_Programmed/sample_file_GLOBAL.txt /lustre/scratch123/hgi/mdt1/teams/soranzo/projects/NEW_MPRA/HT_TEST/ HT_TEST /nfs/users/nfs_m/mt19/Scripts/MPRA_programmed_pipeline/ /nfs/team151_data03/MPRA_Programmed/ 4000 1 normal &
 
 
-## sample_file_GLOBAL.txt carries the information of how to merge the fatqs and where are the UMIs and the R1 and R2
+## sample_file_GLOBAL.txt carries the information of how to merge the fastqs and where are the UMIs and the R1 and R2
 
 head -4 sample_file_GLOBAL.txt
 
