@@ -10,8 +10,9 @@ $ bash Sample_processing.sh sample_file_GLOBAL.txt <path to leave output files> 
 
 example:
 
-nohup bash ~/Scripts/MPRA_programmed_pipeline/Sample_processing.sh /nfs/team151_data03/MPRA_Programmed/sample_file_GLOBAL.txt /lustre/scratch123/hgi/mdt1/teams/soranzo/projects/NEW_MPRA/HT_TEST/ HT_TEST /nfs/users/nfs_m/mt19/Scripts/MPRA_programmed_pipeline/ /nfs/team151_data03/MPRA_Programmed/ 4000 1 normal &
+$ nohup bash ~/Scripts/MPRA_programmed_pipeline/Sample_processing.sh /nfs/team151_data03/MPRA_Programmed/sample_file_GLOBAL.txt /lustre/scratch123/hgi/mdt1/teams/soranzo/projects/NEW_MPRA/HT_TEST/ HT_TEST /nfs/users/nfs_m/mt19/Scripts/MPRA_programmed_pipeline/ /nfs/team151_data03/MPRA_Programmed/ 16000 4 normal &
 
+Memory requirements: 16-48 GB  (for R16_gDNA)
 
 ## sample_file_GLOBAL.txt carries the information of how to merge the fastqs and where are the UMIs and the R1 and R2
 
@@ -37,4 +38,93 @@ for R10_6_gDNA R10_6_gDNA_R2.fastq.gz is the file with UMIs . Umi-tools extract 
 -bamtools 2.5.1 (change the path in the script, in this case it is a conda environment)
 
 
-## The barcode reference to align the fastq "Library_TRIMMED_15bp_Carried_Variants.fasta" is in the Dependencies folder with the indexes needed by bwa. 
+## The barcode reference to align the fastq "Library_TRIMMED_15bp_Carried_Variants.fasta" is in the Dependencies folder with the indexes needed by bwa.
+
+############# MPRA analysis
+
+$ bash MPRA_pipeline.sh <path to leave output files> <path to the MPRA_programmed_pipeline> <path to the FINAL output files from sample_processing> <mem> <processors> <bsub queue>
+
+$ bash MPRA_pipeline.sh /lustre/scratch123/hgi/mdt1/teams/soranzo/projects/NEW_MPRA/HT_TEST_ANALYSIS/ /nfs/users/nfs_m/mt19/Scripts/MPRA_programmed_pipeline/ /lustre/scratch123/hgi/mdt1/teams/soranzo/projects/NEW_MPRA/HT_TEST/ 16000 4 normal
+
+## FILE DEPENDENCIES
+
+untar the ALL_db.tsv.tar.gz in the Dependencies folder
+
+## SOFTWARE DEPENDENCIES
+
+-R-4.1.0, you have to set the path to Rscript at the top of the bash script: Rscript=/software/R-4.1.0/bin/Rscript
+- Rpackages. Important! change the default lib.loc in every script as it direct to my folder in the Sanger farm. See per script but all told they are:
+
+optparse
+MPRAnalyze
+reshape2
+labeling
+ggrepel
+ggeasy
+farver
+cowplot
+zoo
+withr
+viridisLite
+tzdb
+TxDb.Hsapiens.UCSC.hg19.knownGene
+ttutils
+tidyverse
+sysfonts
+svglite
+Sushi
+SummarizedExperiment
+showtextdb
+showtext
+S4Vectors
+R.utils
+rtracklayer
+rstudioapi
+R.oo
+R.methodsS3
+plyr
+org.Hs.eg.db
+OrganismDbi
+memoise
+matrixStats
+MatrixGenerics
+markdown
+liftOverlib.loc
+lemon
+labeling
+jsonlite
+IRanges
+Homo.sapiens
+gwascat
+gtools
+gridExtra
+gridBase
+grid
+GO.db
+glue
+ggtext
+ggridges
+ggplot2
+ggforce
+ggeasy
+GenomicRanges
+GenomicFeatures
+GenomeInfoDb
+farver
+extrafontdb
+extrafont
+dplyr
+digest
+digest
+data.table
+curl
+crayon
+cowplot
+cli
+broom
+biomaRt
+BiocGenerics
+Biobase
+backports
+AnnotationDbi
+ 

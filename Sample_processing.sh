@@ -84,15 +84,15 @@ do
      
 
 #    exit    
-    bsub -G team151 -o $stderrfile2 -q $queue -n$pc -J $name_job -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-   "cat $Lane_1 $Lane_2  > $Merge"
+#     bsub -G team151 -o $stderrfile2 -q $queue -n$pc -J $name_job -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#    "cat $Lane_1 $Lane_2  > $Merge"
 
 
 
-    wait_done=$(echo "done(""$name_job"") &&")
-    array+=($wait_done)
-    array_Merge+=($Merge)
-    echo "---------------------------------------------------------------------------$Merge------------------------------------------>$counter\n"
+#     wait_done=$(echo "done(""$name_job"") &&")
+#     array+=($wait_done)
+#     array_Merge+=($Merge)
+#     echo "---------------------------------------------------------------------------$Merge------------------------------------------>$counter\n"
 
 
        if [ $counter == "4" ]; then
@@ -115,221 +115,221 @@ do
 
 
 
-	#	---------------------> Dependency Trimmomatic-0.39
+# 	#	---------------------> Dependency Trimmomatic-0.39
 	
-        outfile_Trimmomatic=$(echo "$output_dir""/""$name_sample""_Processing.out")
-        touch $outfile_Trimmomatic
-        echo -n "" > $outfile_Trimmomatic
-
-	
-        name_trimmomatic=$(echo "$batch""_""Trimmomatic""_""$name_sample""_job")
-        output_trimmomatic_r3=$(echo "$output_dir""$Type""_""Trimmed_""$R3")
-	output_trimmomatic_r3=$(echo "$output_trimmomatic_r3"|sed -r "s|$path_to_fastq_file||g")
-	
-        echo "->$name_trimmomatic $output_trimmomatic_r3<-"
-
-        bsub -G team151 -o $outfile_Trimmomatic -q $queue -n$pc -w"$string3" -J $name_trimmomatic -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-        "java -jar /nfs/users/nfs_m/mt19/sOFTWARE/Trimmomatic-0.39/trimmomatic-0.39.jar SE $R3 $output_trimmomatic_r3 HEADCROP:6"
-
-
-	#       ---------------------> umi_tools
-
-	type=$(echo "Extracting_UMI_R1")
-	outfile_Extracting_UMI_R1=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
-	touch $outfile_Extracting_UMI_R1
-	echo -n "" > $outfile_Extracting_UMI_R1
-	name_Extracting_UMI_R1=$(echo "$batch""_""$type""_""$name_sample""_job")
-	
-	output_processed_R1=$(echo "$output_dir""$master_prefix""_R1_Plus_UMIS"".fastq.gz")
-
-
-	bsub -G team151 -o $outfile_Extracting_UMI_R1 -M $mem -w"done($name_trimmomatic)" -J $name_Extracting_UMI_R1 -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
-	"/nfs/team151/software/umi-tools/bin/umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$R1 --stdout=$output_processed_R1 --read2-stdout"
-
-
-	type=$(echo "Extracting_UMI_R3")
-	outfile_Extracting_UMI_R3=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
-	touch $outfile_Extracting_UMI_R3
-	echo -n "" > $outfile_Extracting_UMI_R3
-	name_Extracting_UMI_R3=$(echo "$batch""_""$type""_""$name_sample""_job")
+#         outfile_Trimmomatic=$(echo "$output_dir""/""$name_sample""_Processing.out")
+#         touch $outfile_Trimmomatic
+#         echo -n "" > $outfile_Trimmomatic
 
 	
-	output_processed_R3=$(echo "$output_dir""$master_prefix""_R3_Plus_UMIS"".fastq.gz")
+#         name_trimmomatic=$(echo "$batch""_""Trimmomatic""_""$name_sample""_job")
+#         output_trimmomatic_r3=$(echo "$output_dir""$Type""_""Trimmed_""$R3")
+# 	output_trimmomatic_r3=$(echo "$output_trimmomatic_r3"|sed -r "s|$path_to_fastq_file||g")
+	
+#         echo "->$name_trimmomatic $output_trimmomatic_r3<-"
+
+#         bsub -G team151 -o $outfile_Trimmomatic -q $queue -n$pc -w"$string3" -J $name_trimmomatic -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#         "java -jar /nfs/users/nfs_m/mt19/sOFTWARE/Trimmomatic-0.39/trimmomatic-0.39.jar SE $R3 $output_trimmomatic_r3 HEADCROP:6"
 
 
-	bsub -G team151 -o $outfile_Extracting_UMI_R3 -M $mem -w"done($name_trimmomatic)" -J $name_Extracting_UMI_R3 -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
-	"/nfs/team151/software/umi-tools/bin/umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$output_trimmomatic_r3 --stdout=$output_processed_R3 --read2-stdout"
+# 	#       ---------------------> umi_tools
+
+# 	type=$(echo "Extracting_UMI_R1")
+# 	outfile_Extracting_UMI_R1=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+# 	touch $outfile_Extracting_UMI_R1
+# 	echo -n "" > $outfile_Extracting_UMI_R1
+# 	name_Extracting_UMI_R1=$(echo "$batch""_""$type""_""$name_sample""_job")
+	
+# 	output_processed_R1=$(echo "$output_dir""$master_prefix""_R1_Plus_UMIS"".fastq.gz")
 
 
-        #       ---------------------> flash
+# 	bsub -G team151 -o $outfile_Extracting_UMI_R1 -M $mem -w"done($name_trimmomatic)" -J $name_Extracting_UMI_R1 -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
+# 	"/nfs/team151/software/umi-tools/bin/umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$R1 --stdout=$output_processed_R1 --read2-stdout"
 
 
-	 type=$(echo "R1_R3_merging")
-        outfile_merging=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
-        touch $outfile_merging
-        echo -n "" > $outfile_merging
-         name_merging=$(echo "$batch""_""$type""_""$name_sample""_job")
-	 flash2_output=$(echo "$output_dir""$master_prefix"".extendedFrags.fastq.gz")
-	 flash2_not_combined_1=$(echo "$output_dir""$master_prefix"".notCombined_1.fastq.gz")
- 	 flash2_not_combined_2=$(echo "$output_dir""$master_prefix"".notCombined_2.fastq.gz")
+# 	type=$(echo "Extracting_UMI_R3")
+# 	outfile_Extracting_UMI_R3=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+# 	touch $outfile_Extracting_UMI_R3
+# 	echo -n "" > $outfile_Extracting_UMI_R3
+# 	name_Extracting_UMI_R3=$(echo "$batch""_""$type""_""$name_sample""_job")
+
+	
+# 	output_processed_R3=$(echo "$output_dir""$master_prefix""_R3_Plus_UMIS"".fastq.gz")
+
+
+# 	bsub -G team151 -o $outfile_Extracting_UMI_R3 -M $mem -w"done($name_trimmomatic)" -J $name_Extracting_UMI_R3 -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
+# 	"/nfs/team151/software/umi-tools/bin/umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$output_trimmomatic_r3 --stdout=$output_processed_R3 --read2-stdout"
+
+
+#         #       ---------------------> flash
+
+
+# 	 type=$(echo "R1_R3_merging")
+#         outfile_merging=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+#         touch $outfile_merging
+#         echo -n "" > $outfile_merging
+#          name_merging=$(echo "$batch""_""$type""_""$name_sample""_job")
+# 	 flash2_output=$(echo "$output_dir""$master_prefix"".extendedFrags.fastq.gz")
+# 	 flash2_not_combined_1=$(echo "$output_dir""$master_prefix"".notCombined_1.fastq.gz")
+#  	 flash2_not_combined_2=$(echo "$output_dir""$master_prefix"".notCombined_2.fastq.gz")
 
 
 	
-	bsub -G team151 -o $outfile_merging -q $queue -n$pc -w"done($name_Extracting_UMI_R1) && done($name_Extracting_UMI_R3)" -J $name_merging -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-        "flash2 -z --output-prefix=$master_prefix -t 1 -r 11 -f 11 -s 2 -m 10 -x 0.122 $output_processed_R1 $output_processed_R3"
+# 	bsub -G team151 -o $outfile_merging -q $queue -n$pc -w"done($name_Extracting_UMI_R1) && done($name_Extracting_UMI_R3)" -J $name_merging -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#         "flash2 -z --output-prefix=$master_prefix -t 1 -r 11 -f 11 -s 2 -m 10 -x 0.122 $output_processed_R1 $output_processed_R3"
 	
 
-        type=$(echo "CLEANING_1")
-        name_CLEANING=$(echo "$batch""_""$type""_""$name_sample""_job")
+#         type=$(echo "CLEANING_1")
+#         name_CLEANING=$(echo "$batch""_""$type""_""$name_sample""_job")
 
-        bsub -G team151 -o $outfile_merging -M 4000  -w"done($name_merging)" -J $name_CLEANING  -R"select[mem>=4000] rusage[mem=4000] span[hosts=1]" -n1 -q $queue -- \
-        "rm $R1 $R2 $output_trimmomatic_r3 $R3 $flash2_not_combined_1 $flash2_not_combined_2"
+#         bsub -G team151 -o $outfile_merging -M 4000  -w"done($name_merging)" -J $name_CLEANING  -R"select[mem>=4000] rusage[mem=4000] span[hosts=1]" -n1 -q $queue -- \
+#         "rm $R1 $R2 $output_trimmomatic_r3 $R3 $flash2_not_combined_1 $flash2_not_combined_2"
 
 
-#######################################################################################################################################################
+# #######################################################################################################################################################
 
-	#	----> bwa
+# 	#	----> bwa
 	
-	type=$(echo "aligning")
-        outfile_aligning=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
-        touch $outfile_aligning
-        echo -n "" > $outfile_aligning
-        name_aligning=$(echo "$batch""_""$type""_""$name_sample""_job")
-	REFERENCE=$(echo "$path_Dependencies""Library_TRIMMED_15bp_Carried_Variants.fasta")
+# 	type=$(echo "aligning")
+#         outfile_aligning=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+#         touch $outfile_aligning
+#         echo -n "" > $outfile_aligning
+#         name_aligning=$(echo "$batch""_""$type""_""$name_sample""_job")
+# 	REFERENCE=$(echo "$path_Dependencies""Library_TRIMMED_15bp_Carried_Variants.fasta")
 
-	sai_output=$(echo "$output_dir""$master_prefix"".sai")	
+# 	sai_output=$(echo "$output_dir""$master_prefix"".sai")	
 	
-	bsub -G team151 -o $outfile_aligning -q $queue -n$pc -w"done($name_merging)" -J $name_aligning -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-        "bwa aln -l 10 -O 100 -E 100 $REFERENCE $flash2_output > $sai_output"
+# 	bsub -G team151 -o $outfile_aligning -q $queue -n$pc -w"done($name_merging)" -J $name_aligning -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#         "bwa aln -l 10 -O 100 -E 100 $REFERENCE $flash2_output > $sai_output"
 
 	 
-	type=$(echo "converting_and_filtering")
-        outfile_converting=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
-        touch $outfile_converting
-        echo -n "" > $outfile_converting
-        name_converting=$(echo "$batch""_""$type""_""$name_sample""_job")
-        REFERENCE=$(echo "$path_Dependencies""Library_TRIMMED_15bp_Carried_Variants.fasta")
+# 	type=$(echo "converting_and_filtering")
+#         outfile_converting=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+#         touch $outfile_converting
+#         echo -n "" > $outfile_converting
+#         name_converting=$(echo "$batch""_""$type""_""$name_sample""_job")
+#         REFERENCE=$(echo "$path_Dependencies""Library_TRIMMED_15bp_Carried_Variants.fasta")
 
-	flash2_output=$(echo "$output_dir""$master_prefix"".extendedFrags.fastq.gz")
-	sam_output=$(echo "$output_dir""$master_prefix"".sam")
-
-	
-	bsub -G team151 -o $outfile_converting -q $queue -n$pc -w"done($name_aligning)" -J $name_converting -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-        "bwa samse $REFERENCE $sai_output $flash2_output > $sam_output"
-
-
-	  type=$(echo "clean_2""_""$master_prefix")
-	  outfile_clean_2=$(echo "$output_dir""outfile_""$type"".out")
-	  touch $outfile_clean_2
-	  echo -n "" > $outfile_clean_2
-	  name_clean_2=$(echo "$type""_job")
-
-
-	  bsub -G team151 -o $outfile_clean_2 -q $queue -n$pc -w"done($name_converting)" -J $name_clean_2 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-       "rm $sai_output"
-
-
-
-	  type=$(echo "sam_to_bam_and_filter_first_alignment""_""$master_prefix")
-	  outfile_sam_to_bam_and_filter_first_alignment=$(echo "$output_dir""outfile_""$type"".out")
-	  touch $outfile_sam_to_bam_and_filter_first_alignment
-	  echo -n "" > $outfile_sam_to_bam_and_filter_first_alignment
-	  name_sam_to_bam_and_filter_first_alignment=$(echo "$type""_job")
-
-
-	  sam_output=$(echo "$output_dir""$master_prefix"".sam")
-	  output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
-
-
-	  bsub -G team151 -o $outfile_sam_to_bam_and_filter_first_alignment -q $queue -n$pc -w"done($name_converting)" -J $name_sam_to_bam_and_filter_first_alignment -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-	   "samtools view -@$pc -h -F 20,4,256 $sam_output|samtools sort -@$pc -o $output_bwa_bam"
-
-	   ####### Get unalagined reads
-
-    type=$(echo "unaligned_reads""_""$master_prefix")
-    outfile_unaligned_reads=$(echo "$output_dir""outfile_""$type"".out")
-    touch $outfile_unaligned_reads
-    echo -n "" > $outfile_unaligned_reads
-    name_unaligned_reads=$(echo "$type""_job")
-
-
-    sam_output=$(echo "$output_dir""$master_prefix"".sam")
-    unaligned_bwa_bam=$(echo "$output_dir""Unaligned_reads_""$master_prefix"".bam")
-
-
-    bsub -G team151 -o $outfile_unaligned_reads -q $queue -n$pc -w"done($name_converting)" -J $name_unaligned_reads -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-    "samtools view -@$pc -h -f 20,4 -F 256 $sam_output|samtools sort -@$pc -o $unaligned_bwa_bam"
-
-    ####### clean_2_5
-
-
-
-    type=$(echo "clean_2_5""_""$master_prefix")
-    name_clean_2=$(echo "$type""_job")
-
-
-    bsub -G team151 -o $outfile_clean_2 -q $queue -n$pc -w"done($name_unaligned_reads)" -J $name_clean_2 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-    "rm $sam_output"
+# 	flash2_output=$(echo "$output_dir""$master_prefix"".extendedFrags.fastq.gz")
+# 	sam_output=$(echo "$output_dir""$master_prefix"".sam")
 
 	
-##### indexing_1 #####
+# 	bsub -G team151 -o $outfile_converting -q $queue -n$pc -w"done($name_aligning)" -J $name_converting -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#         "bwa samse $REFERENCE $sai_output $flash2_output > $sam_output"
 
 
-    type=$(echo "indexing_1""_""$master_prefix")
-    outfile_indexing_1=$(echo "$output_dir""outfile_""$type"".out")
-    touch $outfile_indexing_1
-    echo -n "" > $outfile_indexing_1
-    name_indexing_1=$(echo "$type""_job")
+# 	  type=$(echo "clean_2""_""$master_prefix")
+# 	  outfile_clean_2=$(echo "$output_dir""outfile_""$type"".out")
+# 	  touch $outfile_clean_2
+# 	  echo -n "" > $outfile_clean_2
+# 	  name_clean_2=$(echo "$type""_job")
 
 
-    sam_output=$(echo "$output_dir""$master_prefix"".sam")
-    output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
+# 	  bsub -G team151 -o $outfile_clean_2 -q $queue -n$pc -w"done($name_converting)" -J $name_clean_2 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#        "rm $sai_output"
 
 
-    bsub -G team151 -o $outfile_indexing_1 -q $queue -n$pc -w"done($name_sam_to_bam_and_filter_first_alignment)" -J $name_indexing_1 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-	 "samtools index $output_bwa_bam"
 
-      ################################################################## bamtools_filter ####################################################################################################
-
-    source /software/hgi/installs/anaconda3/etc/profile.d/conda.sh
-
-
-    conda_bamtools=$(echo "/nfs/team151/software/bamtools/")
-
-    conda deactivate
-
-    conda activate $conda_bamtools
+# 	  type=$(echo "sam_to_bam_and_filter_first_alignment""_""$master_prefix")
+# 	  outfile_sam_to_bam_and_filter_first_alignment=$(echo "$output_dir""outfile_""$type"".out")
+# 	  touch $outfile_sam_to_bam_and_filter_first_alignment
+# 	  echo -n "" > $outfile_sam_to_bam_and_filter_first_alignment
+# 	  name_sam_to_bam_and_filter_first_alignment=$(echo "$type""_job")
 
 
-    type=$(echo "bamtools_filter""_""$master_prefix")
-    outfile_bamtools_filter=$(echo "$output_dir""outfile_""$type"".out")
-    touch $outfile_bamtools_filter
-    echo -n "" > $outfile_bamtools_filter
-    name_bamtools_filter=$(echo "$type""_job")
+# 	  sam_output=$(echo "$output_dir""$master_prefix"".sam")
+# 	  output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
 
 
-    output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
-    output_bwa_bam_filtered=$(echo "$output_dir""$master_prefix""_filtered"".bam")
+# 	  bsub -G team151 -o $outfile_sam_to_bam_and_filter_first_alignment -q $queue -n$pc -w"done($name_converting)" -J $name_sam_to_bam_and_filter_first_alignment -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+# 	   "samtools view -@$pc -h -F 20,4,256 $sam_output|samtools sort -@$pc -o $output_bwa_bam"
+
+# 	   ####### Get unalagined reads
+
+#     type=$(echo "unaligned_reads""_""$master_prefix")
+#     outfile_unaligned_reads=$(echo "$output_dir""outfile_""$type"".out")
+#     touch $outfile_unaligned_reads
+#     echo -n "" > $outfile_unaligned_reads
+#     name_unaligned_reads=$(echo "$type""_job")
 
 
-     bsub -G team151 -o $outfile_bamtools_filter -q $queue -n$pc -w"done($name_indexing_1)" -J $name_bamtools_filter -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-	  "bamtools filter -tag NM:0 -in $output_bwa_bam -out $output_bwa_bam_filtered"
-
-    type=$(echo "indexing_2""_""$master_prefix")
-    outfile_indexing_2=$(echo "$output_dir""outfile_""$type"".out")
-    touch $outfile_indexing_2
-    echo -n "" > $outfile_indexing_2
-    name_indexing_2=$(echo "$type""_job")
-
-    output_bwa_bam_filtered=$(echo "$output_dir""$master_prefix""_filtered"".bam")
+#     sam_output=$(echo "$output_dir""$master_prefix"".sam")
+#     unaligned_bwa_bam=$(echo "$output_dir""Unaligned_reads_""$master_prefix"".bam")
 
 
-    bsub -G team151 -o $outfile_indexing_2 -q $queue -n$pc -w"done($name_bamtools_filter)" -J $name_indexing_2 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
-	 "samtools index $output_bwa_bam_filtered"
+#     bsub -G team151 -o $outfile_unaligned_reads -q $queue -n$pc -w"done($name_converting)" -J $name_unaligned_reads -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#     "samtools view -@$pc -h -f 20,4 -F 256 $sam_output|samtools sort -@$pc -o $unaligned_bwa_bam"
 
-    ########################################## umi_tools ##########################################
-    ###################################################################################
-    ##################################################################################
+#     ####### clean_2_5
+
+
+
+#     type=$(echo "clean_2_5""_""$master_prefix")
+#     name_clean_2=$(echo "$type""_job")
+
+
+#     bsub -G team151 -o $outfile_clean_2 -q $queue -n$pc -w"done($name_unaligned_reads)" -J $name_clean_2 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+#     "rm $sam_output"
+
+	
+# ##### indexing_1 #####
+
+
+#     type=$(echo "indexing_1""_""$master_prefix")
+#     outfile_indexing_1=$(echo "$output_dir""outfile_""$type"".out")
+#     touch $outfile_indexing_1
+#     echo -n "" > $outfile_indexing_1
+#     name_indexing_1=$(echo "$type""_job")
+
+
+#     sam_output=$(echo "$output_dir""$master_prefix"".sam")
+#     output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
+
+
+#     bsub -G team151 -o $outfile_indexing_1 -q $queue -n$pc -w"done($name_sam_to_bam_and_filter_first_alignment)" -J $name_indexing_1 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+# 	 "samtools index $output_bwa_bam"
+
+#       ################################################################## bamtools_filter ####################################################################################################
+
+#     source /software/hgi/installs/anaconda3/etc/profile.d/conda.sh
+
+
+#     conda_bamtools=$(echo "/nfs/team151/software/bamtools/")
+
+#     conda deactivate
+
+#     conda activate $conda_bamtools
+
+
+#     type=$(echo "bamtools_filter""_""$master_prefix")
+#     outfile_bamtools_filter=$(echo "$output_dir""outfile_""$type"".out")
+#     touch $outfile_bamtools_filter
+#     echo -n "" > $outfile_bamtools_filter
+#     name_bamtools_filter=$(echo "$type""_job")
+
+
+#     output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
+#     output_bwa_bam_filtered=$(echo "$output_dir""$master_prefix""_filtered"".bam")
+
+
+#      bsub -G team151 -o $outfile_bamtools_filter -q $queue -n$pc -w"done($name_indexing_1)" -J $name_bamtools_filter -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+# 	  "bamtools filter -tag NM:0 -in $output_bwa_bam -out $output_bwa_bam_filtered"
+
+#     type=$(echo "indexing_2""_""$master_prefix")
+#     outfile_indexing_2=$(echo "$output_dir""outfile_""$type"".out")
+#     touch $outfile_indexing_2
+#     echo -n "" > $outfile_indexing_2
+#     name_indexing_2=$(echo "$type""_job")
+
+#     output_bwa_bam_filtered=$(echo "$output_dir""$master_prefix""_filtered"".bam")
+
+
+#     bsub -G team151 -o $outfile_indexing_2 -q $queue -n$pc -w"done($name_bamtools_filter)" -J $name_indexing_2 -M $mem -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -- \
+# 	 "samtools index $output_bwa_bam_filtered"
+
+#     ########################################## umi_tools ##########################################
+#     ###################################################################################
+#     ##################################################################################
 
         type=$(echo "umi_tools_grouping""_""$master_prefix")
     outfile_umi_tools_grouping=$(echo "$output_dir""outfile""_""$type"".out")
@@ -343,7 +343,8 @@ do
     output_umi_tools_log=$(echo "$output_dir""$master_prefix""_group.log")
     output_bwa_bam=$(echo "$output_dir""$master_prefix"".bam")
 
-    bsub -G team151 -o $outfile_umi_tools_grouping -M $mem -J $name_umi_tools_grouping -w"done($name_indexing_2)" -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
+#   bsub -G team151 -o $outfile_umi_tools_grouping -M $mem -J $name_umi_tools_grouping -w"done($name_indexing_2)" -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
+    bsub -G team151 -o $outfile_umi_tools_grouping -M $mem -J $name_umi_tools_grouping -R"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]" -n$pc -q $queue -- \
     "/nfs/team151/software/umi-tools/bin/umi_tools group -I $output_bwa_bam_filtered --group-out=$output_umi_tools_group --log=$output_umi_tools_log"
 
 

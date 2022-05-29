@@ -64,6 +64,9 @@ echo "--type $type --out $output_dir\"" >> $output
 
 
 
+#bash $output
+#exit
+
 Rscript_QC_graphs=$(echo "$path_Rscripts""251_MPRA_2_QC_GRAPHS.R")
 
 type=$(echo "QC_graphs")
@@ -346,9 +349,9 @@ echo "\"$Rscript $Rscript_UPSETR \\" >> $output
 echo "--CSQ_colors $CSQ_colors \\" >> $output
 echo "--type $type --out $output_dir\"" >> $output
 
+  
+
  
-
-
 
 echo "#####################################################################-----> LINEAGE_PLOTS <-----###############################################################################"  >> $output
 
@@ -363,6 +366,8 @@ name_LINEAGE_PLOTS=$(echo "$type""_""job")
 
 CSQ_colors=$(echo "$path_Dependencies""df_CSQ_colors.rds")
 dB=$(echo "$path_Dependencies""ALL_db.tsv")
+dB=$(echo '/lustre/scratch123/hgi/mdt1/teams/soranzo/projects/Explore_Patricks_tables/ALL_db.tsv')
+
 TOME_correspondence=$(echo "$path_Dependencies""Correspondence_phenotype_TOME.txt")
 finemap_prob_Threshold=$(echo '0.1')
 
@@ -390,6 +395,7 @@ name_EFFECT_SIZE_STATS_and_LM=$(echo "$type""_""job")
 
 
 dB=$(echo "$path_Dependencies""ALL_db.tsv")
+dB=$(echo '/lustre/scratch123/hgi/mdt1/teams/soranzo/projects/Explore_Patricks_tables/ALL_db.tsv')
 finemap_prob_Threshold=$(echo '0.1')
 KEY_collpase_Plus_Variant_lineage_CLASSIFICATION=$(echo "$output_dir""LINEAGE_plots/KEY_collpase_Plus_Variant_lineage_CLASSIFICATION.rds")
 TOME_correspondence=$(echo "$path_Dependencies""Correspondence_phenotype_TOME.txt")
@@ -511,25 +517,25 @@ echo "--LONG_MATRIX $LONG_MATRIX \\" >> $output
 echo "--MPRA_Real_tile_QC2_PASS $MPRA_Real_tile_QC2_PASS \\" >> $output
 echo "--type $type --out $output_dir\"" >> $output
 
-echo "#########################################################################################################################################################################"  >> $output
-echo "#####################################################################-----> Per variant graphs <-----###############################################################################"  >> $output
+# echo "#########################################################################################################################################################################"  >> $output
+# echo "#####################################################################-----> Per variant graphs <-----###############################################################################"  >> $output
 
-Rscript_dot_plot_variant=$(echo "$path_Rscripts""251_MPRA_16_Per_variant_dot_plot.R")
+# Rscript_dot_plot_variant=$(echo "$path_Rscripts""251_MPRA_16_Per_variant_dot_plot.R")
 
-type=$(echo "dot_plot_variant")
-outfile_dot_plot_variant=$(echo "$output_dir""outfile""_""$type"".out")
-touch $outfile_dot_plot_variant
-echo -n "" > $outfile_dot_plot_variant
-name_dot_plot_variant=$(echo "$type""_job")
+# type=$(echo "dot_plot_variant")
+# outfile_dot_plot_variant=$(echo "$output_dir""outfile""_""$type"".out")
+# touch $outfile_dot_plot_variant
+# echo -n "" > $outfile_dot_plot_variant
+# name_dot_plot_variant=$(echo "$type""_job")
 
-MPRA_Real_tile_QC2_PASS=$(echo "$output_dir""MPRA_Real_Tile_QC2_PASS.rds")
+# MPRA_Real_tile_QC2_PASS=$(echo "$output_dir""MPRA_Real_Tile_QC2_PASS.rds")
 
-echo "bsub -G team151 -o $outfile_dot_plot_variant -M $mem -w\"done($name_LINEAGE_PLOTS) && done($name_Parameter_recalculation)\"  -J $name_dot_plot_variant -R\"select[model==Intel_Platinum]\" -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
-#echo "bsub -G team151 -o $outfile_dot_plot_variant -M $mem -w\"done($name_LINEAGE_PLOTS)\" -J $name_dot_plot_variant -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
-#echo "bsub -G team151 -o $outfile_dot_plot_variant -M $mem -J $name_dot_plot_variant -R\"select[model==Intel_Platinum]\" -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
-echo "\"$Rscript $Rscript_dot_plot_variant \\" >> $output
-echo "--MPRA_Real_tile_QC2_PASS $MPRA_Real_tile_QC2_PASS \\" >> $output
-echo "--type $type --out $output_dir\"" >> $output
+# echo "bsub -G team151 -o $outfile_dot_plot_variant -M $mem -w\"done($name_LINEAGE_PLOTS) && done($name_Parameter_recalculation)\"  -J $name_dot_plot_variant -R\"select[model==Intel_Platinum]\" -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
+# #echo "bsub -G team151 -o $outfile_dot_plot_variant -M $mem -w\"done($name_LINEAGE_PLOTS)\" -J $name_dot_plot_variant -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
+# #echo "bsub -G team151 -o $outfile_dot_plot_variant -M $mem -J $name_dot_plot_variant -R\"select[model==Intel_Platinum]\" -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
+# echo "\"$Rscript $Rscript_dot_plot_variant \\" >> $output
+# echo "--MPRA_Real_tile_QC2_PASS $MPRA_Real_tile_QC2_PASS \\" >> $output
+# echo "--type $type --out $output_dir\"" >> $output
 
 bash $output
 
