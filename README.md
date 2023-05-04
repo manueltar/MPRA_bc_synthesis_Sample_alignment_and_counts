@@ -6,7 +6,7 @@
 
 command line:
  
-$ bash Sample_processing.sh sample_file_GLOBAL.txt <path to leave output files> <batch> <path to the MPRA_programmed_pipeline> <path to the original fastq files produced by bcl2fastq> <mem> <processors> <bsub queue>
+$ bash Sample_processing.sh sample_file_GLOBAL.txt \<path to leave output files\> \<batch\> \<path to the MPRA_programmed_pipeline\> \<path to the original fastq files produced by bcl2fastq\> \<mem\> \<processors\> \<bsub queue\>
 
 example:
 
