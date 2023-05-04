@@ -58,6 +58,14 @@ data_wrangling = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   #### Read TOME_correspondence ----
   
   TOME_correspondence = read.table(opt$TOME_correspondence, sep="\t", stringsAsFactors = F, header = T)
@@ -83,17 +91,17 @@ data_wrangling = function(option_list)
   cat("\n")
   
   
-  #### KEY_collpase_Plus_Variant_lineage_CLASSIFICATION ----
+  #### CUMMULATIVE_CLASSES ----
   
   
-  KEY_collapse<-readRDS(file=opt$KEY_collpase_Plus_Variant_lineage_CLASSIFICATION)
+  CUMMULATIVE_CLASSES<-readRDS(file=opt$CUMMULATIVE_CLASSES)
   
-  cat("KEY_collapse_0\n")
-  cat(str(KEY_collapse))
+  cat("CUMMULATIVE_CLASSES_0\n")
+  cat(str(CUMMULATIVE_CLASSES))
   cat("\n")
   
   
-  check<-KEY_collapse[is.na(KEY_collapse$CLASS_erythroid),]
+  check<-CUMMULATIVE_CLASSES[is.na(CUMMULATIVE_CLASSES$CLASS_erythroid),]
   
   # cat("check_0\n")
   # cat(str(check))
@@ -104,18 +112,8 @@ data_wrangling = function(option_list)
   # cat("\n")
   
   
-  ##### exclude CTRLS -----
-  
-  KEY_collapse<-KEY_collapse[which(KEY_collapse$Label_2 == "ASSAYED_VARIANT"),]
-  
-  KEY_collapse<-droplevels(KEY_collapse)
-  
-  cat("KEY_collapse_excluded_CTRLS\n")
-  cat(str(KEY_collapse))
-  cat("\n")
-  
-  
-  check<-KEY_collapse[is.na(KEY_collapse$CLASS_erythroid),]
+
+  check<-CUMMULATIVE_CLASSES[is.na(CUMMULATIVE_CLASSES$CLASS_erythroid),]
   
   # cat("check_0\n")
   # cat(str(check))
@@ -133,7 +131,7 @@ data_wrangling = function(option_list)
   cat("\n")
   
 
-  dB_subset<-dB[which(dB$VAR%in%KEY_collapse$VAR),]
+  dB_subset<-dB[which(dB$VAR%in%CUMMULATIVE_CLASSES$VAR),]
   
   # cat("dB_subset_\n")
   # cat(str(dB_subset))
@@ -148,7 +146,7 @@ data_wrangling = function(option_list)
   ##### LOOP classify variants -----
   
   
-  VARS<-unique(as.character(KEY_collapse$VAR))
+  VARS<-unique(as.character(CUMMULATIVE_CLASSES$VAR))
   
   
   cat("VARS_\n")
@@ -163,6 +161,8 @@ data_wrangling = function(option_list)
   ))
   
 
+  
+  Condition_DEBUG <- 0
   
   
   
@@ -180,59 +180,79 @@ data_wrangling = function(option_list)
     cat("\t")
   
     
-    KEY_collapse_sel<-KEY_collapse[which(KEY_collapse$VAR == VAR_sel &
-                                           KEY_collapse$carried_variants  == carried_variants_sel),]
+    CUMMULATIVE_CLASSES_sel<-CUMMULATIVE_CLASSES[which(CUMMULATIVE_CLASSES$VAR == VAR_sel &
+                                           CUMMULATIVE_CLASSES$carried_variants  == carried_variants_sel),]
     
-    # cat("KEY_collapse_sel_\n")
-    # cat(str(KEY_collapse_sel))
-    # cat("\n")
-    # 
-    Element_sel<-unique(as.character(KEY_collapse_sel$KEY))
+    if(Condition_DEBUG == 1)
+    {
+      cat("\n")
+      cat("CUMMULATIVE_CLASSES_sel_\n")
+      cat(str(CUMMULATIVE_CLASSES_sel))
+      cat("\n")
+    }
+
+    Element_sel<-unique(as.character(CUMMULATIVE_CLASSES_sel$KEY))
     
     
     cat(sprintf(as.character(Element_sel)))
     cat("\n")
     
-    if(dim(KEY_collapse_sel)[1] > 0)
+    if(dim(CUMMULATIVE_CLASSES_sel)[1] > 0)
     {
     
-        Cell_Types_array<-levels(KEY_collapse_sel$Cell_Type)
+        Cell_Types_array<-levels(CUMMULATIVE_CLASSES_sel$Cell_Type)
         
-        # cat("Cell_Types_array_\n")
-        # cat(str(Cell_Types_array))
-        # cat("\n")
+        if(Condition_DEBUG == 1)
+        {
+          cat("Cell_Types_array_\n")
+          cat(str(Cell_Types_array))
+          cat("\n")
+        }
+        
+        
         
         for(l in 1:length(Cell_Types_array))
         {
           Cell_Types_array_sel<-Cell_Types_array[l]
           
-          
-          # cat("--------------------->\t")
-          # cat(sprintf(as.character(Cell_Types_array_sel)))
-          # cat("\t")
-          
-          
-          KEY_collapse_CT<-KEY_collapse_sel[which(KEY_collapse_sel$Cell_Type == Cell_Types_array_sel),]
-          
-          # cat("KEY_collapse_CT_\n")
-          # cat(str(KEY_collapse_CT))
-          # cat("\n")
-          
-          if(dim(KEY_collapse_CT)[1] > 0)
+          if(Condition_DEBUG == 1)
           {
-            enhancer_CLASS_string<-paste(KEY_collapse_CT$enhancer_CLASS,collapse=";")
+            cat("--------------------->\t")
+            cat(sprintf(as.character(Cell_Types_array_sel)))
+            cat("\t")
+          }
+          
+          
+          CUMMULATIVE_CLASSES_CT<-CUMMULATIVE_CLASSES_sel[which(CUMMULATIVE_CLASSES_sel$Cell_Type == Cell_Types_array_sel),]
+          
+          if(Condition_DEBUG == 1)
+          {
+            cat("CUMMULATIVE_CLASSES_CT_\n")
+            cat(str(CUMMULATIVE_CLASSES_CT))
+            cat("\n")
+          }
+          
+          if(dim(CUMMULATIVE_CLASSES_CT)[1] > 0)
+          {
+            enhancer_CLASS_string<-paste(CUMMULATIVE_CLASSES_CT$enhancer_CLASS,collapse=";")
             
-            # cat("enhancer_CLASS_string>\t")
-            # cat(sprintf(as.character(enhancer_CLASS_string)))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("enhancer_CLASS_string>\t")
+              cat(sprintf(as.character(enhancer_CLASS_string)))
+              cat("\n")
+            }
             
             Element_enhancer_CLASS<-NULL
             
             indx_0<-grep("0", enhancer_CLASS_string)
             
-            # cat("indx_0_\n")
-            # cat(str(indx_0))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_0_\n")
+              cat(str(indx_0))
+              cat("\n")
+            }
             
             if(length(indx_0) > 0)
             {
@@ -242,9 +262,12 @@ data_wrangling = function(option_list)
             
             indx_1<-grep("1", enhancer_CLASS_string)
             
-            # cat("indx_1_\n")
-            # cat(str(indx_1))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_1_\n")
+              cat(str(indx_1))
+              cat("\n")
+            }
             
             if(length(indx_1) > 0)
             {
@@ -254,9 +277,12 @@ data_wrangling = function(option_list)
             
             indx_2<-grep("2", enhancer_CLASS_string)
             
-            # cat("indx_2_\n")
-            # cat(str(indx_2))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_2_\n")
+              cat(str(indx_2))
+              cat("\n")
+            }
             
             if(length(indx_2) > 0)
             {
@@ -264,11 +290,14 @@ data_wrangling = function(option_list)
               Element_enhancer_CLASS<-"2"
             }
             
-            indx_3<-grep("3 or >", enhancer_CLASS_string)
+            indx_3<-grep("3", enhancer_CLASS_string)
             
-            # cat("indx_3_\n")
-            # cat(str(indx_3))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_3_\n")
+              cat(str(indx_3))
+              cat("\n")
+            }
             
             if(length(indx_3) > 0)
             {
@@ -276,19 +305,70 @@ data_wrangling = function(option_list)
               Element_enhancer_CLASS<-"3 or >"
             }
             
-            E_Plus_ASE_CLASS_string<-paste(KEY_collapse_CT$E_Plus_ASE_CLASS,collapse=";")
+            indx_4<-grep("4", enhancer_CLASS_string)
             
-            # cat("E_Plus_ASE_CLASS_string>\t")
-            # cat(sprintf(as.character(E_Plus_ASE_CLASS_string)))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_4_\n")
+              cat(str(indx_4))
+              cat("\n")
+            }
+            
+            if(length(indx_4) > 0)
+            {
+              
+              Element_enhancer_CLASS<-"3 or >"
+            }
+            
+            indx_5<-grep("5", enhancer_CLASS_string)
+            
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_5_\n")
+              cat(str(indx_5))
+              cat("\n")
+            }
+            
+            if(length(indx_5) > 0)
+            {
+              
+              Element_enhancer_CLASS<-"3 or >"
+            }
+            
+            indx_6<-grep("3 or >", enhancer_CLASS_string)
+            
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_6_\n")
+              cat(str(indx_6))
+              cat("\n")
+            }
+            
+            if(length(indx_6) > 0)
+            {
+              
+              Element_enhancer_CLASS<-"3 or >"
+            }
+            
+            E_Plus_ASE_CLASS_string<-paste(CUMMULATIVE_CLASSES_CT$E_Plus_ASE_CLASS,collapse=";")
+            
+            if(Condition_DEBUG == 1)
+            {
+              cat("E_Plus_ASE_CLASS_string>\t")
+              cat(sprintf(as.character(E_Plus_ASE_CLASS_string)))
+              cat("\n")
+            }
             
             Element_E_Plus_ASE_CLASS<-NULL
             
             indx_0<-grep("0", E_Plus_ASE_CLASS_string)
             
-            # cat("indx_0_\n")
-            # cat(str(indx_0))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_0_\n")
+              cat(str(indx_0))
+              cat("\n")
+            }
             
             if(length(indx_0) > 0)
             {
@@ -298,9 +378,12 @@ data_wrangling = function(option_list)
             
             indx_1<-grep("1", E_Plus_ASE_CLASS_string)
             
-            # cat("indx_1_\n")
-            # cat(str(indx_1))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_1_\n")
+              cat(str(indx_1))
+              cat("\n")
+            }
             
             if(length(indx_1) > 0)
             {
@@ -310,9 +393,12 @@ data_wrangling = function(option_list)
             
             indx_2<-grep("2", E_Plus_ASE_CLASS_string)
             
-            # cat("indx_2_\n")
-            # cat(str(indx_2))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_2_\n")
+              cat(str(indx_2))
+              cat("\n")
+            }
             
             if(length(indx_2) > 0)
             {
@@ -320,23 +406,74 @@ data_wrangling = function(option_list)
               Element_E_Plus_ASE_CLASS<-"2"
             }
             
-            indx_3<-grep("3 or >", E_Plus_ASE_CLASS_string)
+            indx_3<-grep("3", E_Plus_ASE_CLASS_string)
             
-            # cat("indx_3_\n")
-            # cat(str(indx_3))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_3_\n")
+              cat(str(indx_3))
+              cat("\n")
+            }
             
             if(length(indx_3) > 0)
             {
               
               Element_E_Plus_ASE_CLASS<-"3 or >"
             }
-            # cat(sprintf(as.character(Element_sel)))
-            # cat("\t")
-            # cat(sprintf(as.character(Element_enhancer_CLASS)))
-            # cat("\t")
-            # cat(sprintf(as.character(Element_E_Plus_ASE_CLASS)))
-            # cat("\n")
+            
+            indx_4<-grep("4", E_Plus_ASE_CLASS_string)
+            
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_4_\n")
+              cat(str(indx_4))
+              cat("\n")
+            }
+            
+            if(length(indx_4) > 0)
+            {
+              
+              Element_E_Plus_ASE_CLASS<-"3 or >"
+            }
+            
+            indx_5<-grep("5", E_Plus_ASE_CLASS_string)
+            
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_5_\n")
+              cat(str(indx_5))
+              cat("\n")
+            }
+            
+            if(length(indx_5) > 0)
+            {
+              
+              Element_E_Plus_ASE_CLASS<-"3 or >"
+            }
+            
+            indx_6<-grep("3 or >", E_Plus_ASE_CLASS_string)
+            
+            if(Condition_DEBUG == 1)
+            {
+              cat("indx_6_\n")
+              cat(str(indx_6))
+              cat("\n")
+            }
+            
+            if(length(indx_6) > 0)
+            {
+              
+              Element_E_Plus_ASE_CLASS<-"3 or >"
+            }
+            if(Condition_DEBUG == 1)
+            {
+              cat(sprintf(as.character(Element_sel)))
+              cat("\t")
+              cat(sprintf(as.character(Element_enhancer_CLASS)))
+              cat("\t")
+              cat(sprintf(as.character(Element_E_Plus_ASE_CLASS)))
+              cat("\n")
+            }
             
             
             #### phenotypes and absolute finemap_z ----
@@ -344,9 +481,12 @@ data_wrangling = function(option_list)
           
             dB_subset_thresholded_sel<-dB_subset_thresholded[which(dB_subset_thresholded$VAR == VAR_sel),]
             
-            # cat("dB_subset_thresholded_sel_\n")
-            # cat(str(dB_subset_thresholded_sel))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("dB_subset_thresholded_sel_\n")
+              cat(str(dB_subset_thresholded_sel))
+              cat("\n")
+            }
             
             indx_phenotypes<-c(which(colnames(dB_subset_thresholded_sel) == "VAR"),
                                       which(colnames(dB_subset_thresholded_sel) == "phenotype"),which(colnames(dB_subset_thresholded_sel) == "abs_finemap_z"))
@@ -354,35 +494,57 @@ data_wrangling = function(option_list)
             
             subset_phenotypes<-unique(dB_subset_thresholded_sel[,indx_phenotypes])
             
-            
-            # cat("subset_phenotypes_0\n")
-            # cat(str(subset_phenotypes))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("subset_phenotypes_0\n")
+              cat(str(subset_phenotypes))
+              cat("\n")
+            }
             
             subset_phenotypes<-merge(subset_phenotypes,
                                      TOME_correspondence_subset,
                                      by="phenotype")
             
-            
-            # cat("subset_phenotypes_1\n")
-            # cat(str(subset_phenotypes))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("subset_phenotypes_1\n")
+              cat(str(subset_phenotypes))
+              cat("\n")
+            }
             
             subset_phenotypes$KEY<-Element_sel
             subset_phenotypes$enhancer_CLASS<-Element_enhancer_CLASS
             subset_phenotypes$E_Plus_ASE_CLASS<-Element_E_Plus_ASE_CLASS
             subset_phenotypes$Cell_Type<-Cell_Types_array_sel
             
-            # cat("subset_phenotypes_2\n")
-            # cat(str(subset_phenotypes))
-            # cat("\n")
+            if(Condition_DEBUG == 1)
+            {
+              cat("subset_phenotypes_2\n")
+              cat(str(subset_phenotypes))
+              cat("\n")
+            }
             
             temp<-rbind(temp,subset_phenotypes)
             
+            if(Condition_DEBUG == 1)
+            {
+              cat("temp_2\n")
+              cat(str(temp))
+              cat("\n")
+            }
             
-          }# dim(KEY_collapse_CT)[1] > 0
+            # if(VAR_sel == "chr1_158613314_G_A")
+            # {
+            #   if(Cell_Types_array_sel == "THP1")
+            #   {
+            #     quit(status = 1)
+            #   }#Cell_Types_array_sel == "THP1"
+            #   
+            # }#VAR_sel == "chr1_158613314_G_A"
+            
+          }# dim(CUMMULATIVE_CLASSES_CT)[1] > 0
         }# l Cell_Types_array
-    }# dim(KEY_collapse_sel)[1] > 0
+    }# dim(CUMMULATIVE_CLASSES_sel)[1] > 0
   }#i
   
   cat("temp_FINAL\n")
@@ -533,7 +695,7 @@ data_wrangling = function(option_list)
   ##### LINEAGE_plots  ----
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -564,7 +726,7 @@ data_wrangling = function(option_list)
   
 }
 
-data_wrangling_FC_Vockley_REF = function(option_list)
+data_wrangling_FC_ASE = function(option_list)
 {
   #### READ and transform type ----
   
@@ -583,6 +745,14 @@ data_wrangling_FC_Vockley_REF = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   #### MPRA Real Tile ----
   
   MPRA_Real_tile = readRDS(opt$MPRA_Real_tile_QC2_PASS)#, sep="\t", header = T), stringsAsFactors = F)
@@ -595,7 +765,7 @@ data_wrangling_FC_Vockley_REF = function(option_list)
   
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -669,7 +839,7 @@ data_wrangling_FC_Vockley_REF = function(option_list)
   temp<-data.frame(matrix(vector(), 0, 7,
                           dimnames=list(c(),
                                         c("VAR","carried_variants","KEY","LogFC",
-                                          "Vockley_REF","abs_Vockley_REF","Cell_Type"))
+                                          "ASE","abs_ASE","Cell_Type"))
   ))
   
   
@@ -720,27 +890,27 @@ data_wrangling_FC_Vockley_REF = function(option_list)
         
         if(dim(MPRA_Real_tile_sel_CT_sel)[1] > 0)
         {
-          MPRA_Real_tile_LogFC_Vockley_REF<-MPRA_Real_tile_sel_CT_sel[c(which(MPRA_Real_tile_sel_CT_sel$variable == "LogFC"),
-                                                                        which(MPRA_Real_tile_sel_CT_sel$variable == "Vockley_REF")),]
+          MPRA_Real_tile_LogFC_ASE<-MPRA_Real_tile_sel_CT_sel[c(which(MPRA_Real_tile_sel_CT_sel$variable == "LogFC"),
+                                                                        which(MPRA_Real_tile_sel_CT_sel$variable == "ASE")),]
           
-          # cat("MPRA_Real_tile_LogFC_Vockley_REF_\n")
-          # cat(str(MPRA_Real_tile_LogFC_Vockley_REF))
+          # cat("MPRA_Real_tile_LogFC_ASE_\n")
+          # cat(str(MPRA_Real_tile_LogFC_ASE))
           # cat("\n")
           
          
-          MPRA_Real_tile_LogFC_Vockley_REF_wide<-as.data.frame(pivot_wider(MPRA_Real_tile_LogFC_Vockley_REF,
+          MPRA_Real_tile_LogFC_ASE_wide<-as.data.frame(pivot_wider(MPRA_Real_tile_LogFC_ASE,
                                                                   id_cols=c("KEY","TILE","VAR","carried_variants"),
                                                                   names_from=variable,
                                                                   values_from=value),stringsAsFactors=F)
           
-          MPRA_Real_tile_LogFC_Vockley_REF_wide$abs_Vockley_REF<-abs(MPRA_Real_tile_LogFC_Vockley_REF_wide$Vockley_REF)
+          MPRA_Real_tile_LogFC_ASE_wide$abs_ASE<-abs(MPRA_Real_tile_LogFC_ASE_wide$ASE)
           
           
-          # cat("MPRA_Real_tile_LogFC_Vockley_REF_wide_0\n")
-          # cat(str(MPRA_Real_tile_LogFC_Vockley_REF_wide))
+          # cat("MPRA_Real_tile_LogFC_ASE_wide_0\n")
+          # cat(str(MPRA_Real_tile_LogFC_ASE_wide))
           # cat("\n")
           
-          MPRA_Real_tile_LogFC_max<-setDT(MPRA_Real_tile_LogFC_Vockley_REF_wide)[, .SD[which.max(LogFC)], by=.(KEY)]
+          MPRA_Real_tile_LogFC_max<-setDT(MPRA_Real_tile_LogFC_ASE_wide)[, .SD[which.max(LogFC)], by=.(KEY)]
           
           # cat("MPRA_Real_tile_LogFC_max_0\n")
           # cat(str(MPRA_Real_tile_LogFC_max))
@@ -748,17 +918,17 @@ data_wrangling_FC_Vockley_REF = function(option_list)
           
           
           
-          MPRA_Real_tile_abs_Vockley_REF_max<-setDT(MPRA_Real_tile_LogFC_Vockley_REF_wide)[, .SD[which.max(abs_Vockley_REF)], by=.(KEY)]
+          MPRA_Real_tile_abs_ASE_max<-setDT(MPRA_Real_tile_LogFC_ASE_wide)[, .SD[which.max(abs_ASE)], by=.(KEY)]
           
-          # cat("MPRA_Real_tile_abs_Vockley_REF_max_0\n")
-          # cat(str(MPRA_Real_tile_abs_Vockley_REF_max))
+          # cat("MPRA_Real_tile_abs_ASE_max_0\n")
+          # cat(str(MPRA_Real_tile_abs_ASE_max))
           # cat("\n")
           
           
-          A.df<-as.data.frame(cbind(VAR_sel,carried_variants_sel,MPRA_Real_tile_abs_Vockley_REF_max$KEY,MPRA_Real_tile_LogFC_max$LogFC,
-                              MPRA_Real_tile_abs_Vockley_REF_max$Vockley_REF,MPRA_Real_tile_abs_Vockley_REF_max$abs_Vockley_REF), stringsAsFactors=F)
+          A.df<-as.data.frame(cbind(VAR_sel,carried_variants_sel,MPRA_Real_tile_abs_ASE_max$KEY,MPRA_Real_tile_LogFC_max$LogFC,
+                              MPRA_Real_tile_abs_ASE_max$ASE,MPRA_Real_tile_abs_ASE_max$abs_ASE), stringsAsFactors=F)
           
-          colnames(A.df)<-c("VAR","carried_variants","KEY","LogFC","Vockley_REF","abs_Vockley_REF")
+          colnames(A.df)<-c("VAR","carried_variants","KEY","LogFC","ASE","abs_ASE")
           
           # cat("A.df_0\n")
           # cat(str(A.df))
@@ -778,8 +948,8 @@ data_wrangling_FC_Vockley_REF = function(option_list)
   
   
   temp$LogFC<-as.numeric(temp$LogFC)
-  temp$Vockley_REF<-as.numeric(temp$Vockley_REF)
-  temp$abs_Vockley_REF<-as.numeric(temp$abs_Vockley_REF)
+  temp$ASE<-as.numeric(temp$ASE)
+  temp$abs_ASE<-as.numeric(temp$abs_ASE)
   
   temp$Cell_Type<-factor(temp$Cell_Type,
                          levels = c("K562","CHRF","HL60","THP1"),
@@ -808,7 +978,7 @@ data_wrangling_FC_Vockley_REF = function(option_list)
   ##### LINEAGE_plots  ----
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -833,11 +1003,11 @@ data_wrangling_FC_Vockley_REF = function(option_list)
   # quit(status = 1)
   
   
-  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_Vockley_REF",".rds", sep='')
+  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_ASE",".rds", sep='')
   saveRDS(file=filename_1,Element_collapse)
 }
 
-ggridge_enhancer_CLASS = function(option_list)
+data_wrangling_enhancer_CLASS = function(option_list)
 {
   #### READ and transform type ----
   
@@ -856,11 +1026,18 @@ ggridge_enhancer_CLASS = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
   ### Read RAW data ----
   
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -885,7 +1062,7 @@ ggridge_enhancer_CLASS = function(option_list)
   # quit(status = 1)
   
   
-  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_Vockley_REF",".rds", sep='')
+  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_ASE",".rds", sep='')
   
   
   Element_collapse<-readRDS(file=filename_1)
@@ -960,7 +1137,7 @@ ggridge_enhancer_CLASS = function(option_list)
   
   list_STATS_DEF<-list()
   list_LM_FC_DEF<-list()
-  list_LM_abs_Vockley_REF_DEF<-list()
+  list_LM_abs_ASE_DEF<-list()
   
   
   for(i in 1:length(Cell_Types_array))
@@ -986,7 +1163,7 @@ ggridge_enhancer_CLASS = function(option_list)
     
     list_STATS_CLASSES<-list()
     list_LM_FC_CLASSES<-list()
-    list_LM_abs_Vockley_REF_CLASSES<-list()
+    list_LM_abs_ASE_CLASSES<-list()
     
     
     for(k in 1:length(AT_LEAST_CLASSES))
@@ -1020,7 +1197,7 @@ ggridge_enhancer_CLASS = function(option_list)
         
         list_STATS_Lineage<-list()
         list_LM_FC_Lineage<-list()
-        list_LM_abs_Vockley_REF_Lineage<-list()
+        list_LM_abs_ASE_Lineage<-list()
         
         
         for(l in 1:length(Lineage_array))
@@ -1048,7 +1225,7 @@ ggridge_enhancer_CLASS = function(option_list)
           
           list_STATS_phenotype<-list()
           list_LM_FC_phenotype<-list()
-          list_LM_abs_Vockley_REF_phenotype<-list()
+          list_LM_abs_ASE_phenotype<-list()
           
           
           for(m in 1:length(phenotype_array))
@@ -1093,39 +1270,39 @@ ggridge_enhancer_CLASS = function(option_list)
                 
                 ####models of relation effect size GWAS and effect size MPRA ----
                 
-                linearModel_abs_Vockley_REF <- summary(lm(abs_finemap_z ~ abs_Vockley_REF, 
+                linearModel_abs_ASE <- summary(lm(abs_finemap_z ~ abs_ASE, 
                                                           data=Element_collapse_CT_CLASS_Lineage_phenotype_sel_ACTIVE))
                 
-                # cat("linearModel_abs_Vockley_REF\n")
-                # cat(str(linearModel_abs_Vockley_REF))
+                # cat("linearModel_abs_ASE\n")
+                # cat(str(linearModel_abs_ASE))
                 # cat("\n")
                 # 
                 
-                r.squared_linearModel_abs_Vockley_REF<-round(linearModel_abs_Vockley_REF$r.squared,3)
-                adj.r.squared_linearModel_abs_Vockley_REF<-round(linearModel_abs_Vockley_REF$adj.r.squared,3)
+                r.squared_linearModel_abs_ASE<-round(linearModel_abs_ASE$r.squared,3)
+                adj.r.squared_linearModel_abs_ASE<-round(linearModel_abs_ASE$adj.r.squared,3)
                 
                 
                 
-                linearModel_abs_Vockley_REF_coeffcient_df.m<-melt(linearModel_abs_Vockley_REF$coefficients)
+                linearModel_abs_ASE_coeffcient_df.m<-melt(linearModel_abs_ASE$coefficients)
                 
-                colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)[which(colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)=="Var1")]<-"Terms"
-                colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)[which(colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)=="Var2")]<-"Parameters"
+                colnames(linearModel_abs_ASE_coeffcient_df.m)[which(colnames(linearModel_abs_ASE_coeffcient_df.m)=="Var1")]<-"Terms"
+                colnames(linearModel_abs_ASE_coeffcient_df.m)[which(colnames(linearModel_abs_ASE_coeffcient_df.m)=="Var2")]<-"Parameters"
                 
-                linearModel_abs_Vockley_REF_coeffcient_df.m$Terms<-as.character(linearModel_abs_Vockley_REF_coeffcient_df.m$Terms)
-                linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters<-as.character(linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters)
-                linearModel_abs_Vockley_REF_coeffcient_df.m$Cell_Type<-Cell_Types_array_sel
-                #  linearModel_abs_Vockley_REF_coeffcient_df.m$LINEAGE_CLASSIF_DEF<-LINEAGE_CLASSIF_DEF_array_sel
-                linearModel_abs_Vockley_REF_coeffcient_df.m$adj.r.squared_linearModel_abs_Vockley_REF<-adj.r.squared_linearModel_abs_Vockley_REF
+                linearModel_abs_ASE_coeffcient_df.m$Terms<-as.character(linearModel_abs_ASE_coeffcient_df.m$Terms)
+                linearModel_abs_ASE_coeffcient_df.m$Parameters<-as.character(linearModel_abs_ASE_coeffcient_df.m$Parameters)
+                linearModel_abs_ASE_coeffcient_df.m$Cell_Type<-Cell_Types_array_sel
+                #  linearModel_abs_ASE_coeffcient_df.m$LINEAGE_CLASSIF_DEF<-LINEAGE_CLASSIF_DEF_array_sel
+                linearModel_abs_ASE_coeffcient_df.m$adj.r.squared_linearModel_abs_ASE<-adj.r.squared_linearModel_abs_ASE
                 
                 
                 
-                # cat("linearModel_abs_Vockley_REF_coeffcient_df.m\n")
-                # cat(str(linearModel_abs_Vockley_REF_coeffcient_df.m))
+                # cat("linearModel_abs_ASE_coeffcient_df.m\n")
+                # cat(str(linearModel_abs_ASE_coeffcient_df.m))
                 # cat("\n")
                 # 
                 
-                FC_slope<-round(linearModel_abs_Vockley_REF_coeffcient_df.m$value[which(linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters== "Estimate" &
-                                                                                          linearModel_abs_Vockley_REF_coeffcient_df.m$Terms == "abs_Vockley_REF")],2)
+                FC_slope<-round(linearModel_abs_ASE_coeffcient_df.m$value[which(linearModel_abs_ASE_coeffcient_df.m$Parameters== "Estimate" &
+                                                                                          linearModel_abs_ASE_coeffcient_df.m$Terms == "abs_ASE")],2)
                 
                 
                 # cat("FC_slope\n")
@@ -1133,15 +1310,15 @@ ggridge_enhancer_CLASS = function(option_list)
                 # cat("\n")
                 
                 
-                FC_intercept<-round(linearModel_abs_Vockley_REF_coeffcient_df.m$value[which(linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters== "Estimate" &
-                                                                                              linearModel_abs_Vockley_REF_coeffcient_df.m$Terms == "(Intercept)")],2)
+                FC_intercept<-round(linearModel_abs_ASE_coeffcient_df.m$value[which(linearModel_abs_ASE_coeffcient_df.m$Parameters== "Estimate" &
+                                                                                              linearModel_abs_ASE_coeffcient_df.m$Terms == "(Intercept)")],2)
                 
                 
                 # cat("FC_intercept\n")
                 # cat(str(FC_intercept))
                 # cat("\n")
                 
-                A.df<-as.data.frame(cbind(phenotype_array_sel,"abs_Vockley_REF",FC_slope,FC_intercept,dim(Element_collapse_CT_CLASS_Lineage_phenotype_sel_ACTIVE)[1],r.squared_linearModel_abs_Vockley_REF))
+                A.df<-as.data.frame(cbind(phenotype_array_sel,"abs_ASE",FC_slope,FC_intercept,dim(Element_collapse_CT_CLASS_Lineage_phenotype_sel_ACTIVE)[1],r.squared_linearModel_abs_ASE))
                 
                 # cat("A.df\n")
                 # cat(str(A.df))
@@ -1153,7 +1330,7 @@ ggridge_enhancer_CLASS = function(option_list)
                 # cat(str(A.df))
                 # cat("\n")
                 
-                list_LM_abs_Vockley_REF_phenotype[[m]]<-A.df
+                list_LM_abs_ASE_phenotype[[m]]<-A.df
                 
                 
                 
@@ -1339,17 +1516,17 @@ ggridge_enhancer_CLASS = function(option_list)
             
           }
           
-          if(length(list_LM_abs_Vockley_REF_phenotype) >0)
+          if(length(list_LM_abs_ASE_phenotype) >0)
           {
-            LM_abs_Vockley_REF_phenotype = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_phenotype, fill = T)))
+            LM_abs_ASE_phenotype = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_phenotype, fill = T)))
             
-            LM_abs_Vockley_REF_phenotype$Lineage<-Lineage_array_sel
+            LM_abs_ASE_phenotype$Lineage<-Lineage_array_sel
             
-            cat("LM_abs_Vockley_REF_phenotype\n")
-            cat(str(LM_abs_Vockley_REF_phenotype))
+            cat("LM_abs_ASE_phenotype\n")
+            cat(str(LM_abs_ASE_phenotype))
             cat("\n")
             
-            list_LM_abs_Vockley_REF_Lineage[[l]]<-LM_abs_Vockley_REF_phenotype
+            list_LM_abs_ASE_Lineage[[l]]<-LM_abs_ASE_phenotype
             
           }
           
@@ -1382,17 +1559,17 @@ ggridge_enhancer_CLASS = function(option_list)
           list_LM_FC_CLASSES[[k]]<-LM_FC_LINEAGE
         }
         
-        if(length(list_LM_abs_Vockley_REF_Lineage) >0)
+        if(length(list_LM_abs_ASE_Lineage) >0)
         {
-          LM_abs_Vockley_REF_LINEAGE = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_Lineage, fill = T)))
+          LM_abs_ASE_LINEAGE = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_Lineage, fill = T)))
           
-          LM_abs_Vockley_REF_LINEAGE$CLASS_COMPARISON<-AT_LEAST_CLASSES_sel
+          LM_abs_ASE_LINEAGE$CLASS_COMPARISON<-AT_LEAST_CLASSES_sel
           
-          cat("LM_abs_Vockley_REF_LINEAGE\n")
-          cat(str(LM_abs_Vockley_REF_LINEAGE))
+          cat("LM_abs_ASE_LINEAGE\n")
+          cat(str(LM_abs_ASE_LINEAGE))
           cat("\n")
           
-          list_LM_abs_Vockley_REF_CLASSES[[k]]<-LM_abs_Vockley_REF_LINEAGE
+          list_LM_abs_ASE_CLASSES[[k]]<-LM_abs_ASE_LINEAGE
         }
         
         if(length(list_STATS_Lineage) >0)
@@ -1412,17 +1589,17 @@ ggridge_enhancer_CLASS = function(option_list)
       # quit(status = 1)
     }# k AT_LEAST_CLASSES_sel
     
-    if(length(list_LM_abs_Vockley_REF_CLASSES) >0)
+    if(length(list_LM_abs_ASE_CLASSES) >0)
     {
-      LM_abs_Vockley_REF_CLASSES = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_CLASSES, fill = T)))
+      LM_abs_ASE_CLASSES = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_CLASSES, fill = T)))
       
-      LM_abs_Vockley_REF_CLASSES$Cell_Type<-Cell_Types_array_sel
+      LM_abs_ASE_CLASSES$Cell_Type<-Cell_Types_array_sel
       
-      cat("LM_abs_Vockley_REF_CLASSES\n")
-      cat(str(LM_abs_Vockley_REF_CLASSES))
+      cat("LM_abs_ASE_CLASSES\n")
+      cat(str(LM_abs_ASE_CLASSES))
       cat("\n")
       
-      list_LM_abs_Vockley_REF_DEF[[i]]<-LM_abs_Vockley_REF_CLASSES
+      list_LM_abs_ASE_DEF[[i]]<-LM_abs_ASE_CLASSES
     }
     
     if(length(list_LM_FC_CLASSES) >0)
@@ -1454,17 +1631,17 @@ ggridge_enhancer_CLASS = function(option_list)
     
   }#i Cell_Types_array[i]
   
-  if(length(list_LM_abs_Vockley_REF_DEF) >0)
+  if(length(list_LM_abs_ASE_DEF) >0)
   {
-    LM_abs_Vockley_REF_CT = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_DEF, fill = T)))
+    LM_abs_ASE_CT = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_DEF, fill = T)))
     
     
-    cat("LM_abs_Vockley_REF_CT\n")
-    cat(str(LM_abs_Vockley_REF_CT))
+    cat("LM_abs_ASE_CT\n")
+    cat(str(LM_abs_ASE_CT))
     cat("\n")
-    cat(sprintf(as.character(names(summary(as.factor(LM_abs_Vockley_REF_CT$Cell_Type))))))
+    cat(sprintf(as.character(names(summary(as.factor(LM_abs_ASE_CT$Cell_Type))))))
     cat("\n")
-    cat(sprintf(as.character(summary(as.factor(LM_abs_Vockley_REF_CT$Cell_Type)))))
+    cat(sprintf(as.character(summary(as.factor(LM_abs_ASE_CT$Cell_Type)))))
     cat("\n")
     
   }
@@ -1484,7 +1661,7 @@ ggridge_enhancer_CLASS = function(option_list)
     
   }
   
-  LM_DEF<-rbind(LM_FC_CT,LM_abs_Vockley_REF_CT)
+  LM_DEF<-rbind(LM_FC_CT,LM_abs_ASE_CT)
   cat("LM_DEF\n")
   cat(str(LM_DEF))
   cat("\n")
@@ -1507,7 +1684,7 @@ ggridge_enhancer_CLASS = function(option_list)
   
   #### SAVE ----
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -1533,7 +1710,7 @@ ggridge_enhancer_CLASS = function(option_list)
   
 }
 
-ggridge_E_Plus_ASE_CLASS = function(option_list)
+data_wrangling_E_Plus_ASE_CLASS = function(option_list)
 {
   #### READ and transform type ----
   
@@ -1552,11 +1729,18 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
   ### Read RAW data ----
   
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -1581,7 +1765,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
   # quit(status = 1)
   
   
-  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_Vockley_REF",".rds", sep='')
+  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_ASE",".rds", sep='')
   
   
   Element_collapse<-readRDS(file=filename_1)
@@ -1656,7 +1840,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
   
   list_STATS_DEF<-list()
   list_LM_FC_DEF<-list()
-  list_LM_abs_Vockley_REF_DEF<-list()
+  list_LM_abs_ASE_DEF<-list()
   
   
   for(i in 1:length(Cell_Types_array))
@@ -1682,7 +1866,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
     
     list_STATS_CLASSES<-list()
     list_LM_FC_CLASSES<-list()
-    list_LM_abs_Vockley_REF_CLASSES<-list()
+    list_LM_abs_ASE_CLASSES<-list()
     
     
     for(k in 1:length(AT_LEAST_CLASSES))
@@ -1716,7 +1900,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
         
         list_STATS_Lineage<-list()
         list_LM_FC_Lineage<-list()
-        list_LM_abs_Vockley_REF_Lineage<-list()
+        list_LM_abs_ASE_Lineage<-list()
         
         
         for(l in 1:length(Lineage_array))
@@ -1744,7 +1928,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
           
           list_STATS_phenotype<-list()
           list_LM_FC_phenotype<-list()
-          list_LM_abs_Vockley_REF_phenotype<-list()
+          list_LM_abs_ASE_phenotype<-list()
           
           
           for(m in 1:length(phenotype_array))
@@ -1789,39 +1973,39 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
                 
                 ####models of relation effect size GWAS and effect size MPRA ----
                 
-                linearModel_abs_Vockley_REF <- summary(lm(abs_finemap_z ~ abs_Vockley_REF, 
+                linearModel_abs_ASE <- summary(lm(abs_finemap_z ~ abs_ASE, 
                                                           data=Element_collapse_CT_CLASS_Lineage_phenotype_sel_ACTIVE))
                 
-                # cat("linearModel_abs_Vockley_REF\n")
-                # cat(str(linearModel_abs_Vockley_REF))
+                # cat("linearModel_abs_ASE\n")
+                # cat(str(linearModel_abs_ASE))
                 # cat("\n")
                 # 
                 
-                r.squared_linearModel_abs_Vockley_REF<-round(linearModel_abs_Vockley_REF$r.squared,3)
-                adj.r.squared_linearModel_abs_Vockley_REF<-round(linearModel_abs_Vockley_REF$adj.r.squared,3)
+                r.squared_linearModel_abs_ASE<-round(linearModel_abs_ASE$r.squared,3)
+                adj.r.squared_linearModel_abs_ASE<-round(linearModel_abs_ASE$adj.r.squared,3)
                 
                 
                 
-                linearModel_abs_Vockley_REF_coeffcient_df.m<-melt(linearModel_abs_Vockley_REF$coefficients)
+                linearModel_abs_ASE_coeffcient_df.m<-melt(linearModel_abs_ASE$coefficients)
                 
-                colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)[which(colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)=="Var1")]<-"Terms"
-                colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)[which(colnames(linearModel_abs_Vockley_REF_coeffcient_df.m)=="Var2")]<-"Parameters"
+                colnames(linearModel_abs_ASE_coeffcient_df.m)[which(colnames(linearModel_abs_ASE_coeffcient_df.m)=="Var1")]<-"Terms"
+                colnames(linearModel_abs_ASE_coeffcient_df.m)[which(colnames(linearModel_abs_ASE_coeffcient_df.m)=="Var2")]<-"Parameters"
                 
-                linearModel_abs_Vockley_REF_coeffcient_df.m$Terms<-as.character(linearModel_abs_Vockley_REF_coeffcient_df.m$Terms)
-                linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters<-as.character(linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters)
-                linearModel_abs_Vockley_REF_coeffcient_df.m$Cell_Type<-Cell_Types_array_sel
-                #  linearModel_abs_Vockley_REF_coeffcient_df.m$LINEAGE_CLASSIF_DEF<-LINEAGE_CLASSIF_DEF_array_sel
-                linearModel_abs_Vockley_REF_coeffcient_df.m$adj.r.squared_linearModel_abs_Vockley_REF<-adj.r.squared_linearModel_abs_Vockley_REF
+                linearModel_abs_ASE_coeffcient_df.m$Terms<-as.character(linearModel_abs_ASE_coeffcient_df.m$Terms)
+                linearModel_abs_ASE_coeffcient_df.m$Parameters<-as.character(linearModel_abs_ASE_coeffcient_df.m$Parameters)
+                linearModel_abs_ASE_coeffcient_df.m$Cell_Type<-Cell_Types_array_sel
+                #  linearModel_abs_ASE_coeffcient_df.m$LINEAGE_CLASSIF_DEF<-LINEAGE_CLASSIF_DEF_array_sel
+                linearModel_abs_ASE_coeffcient_df.m$adj.r.squared_linearModel_abs_ASE<-adj.r.squared_linearModel_abs_ASE
                 
                 
                 
-                # cat("linearModel_abs_Vockley_REF_coeffcient_df.m\n")
-                # cat(str(linearModel_abs_Vockley_REF_coeffcient_df.m))
+                # cat("linearModel_abs_ASE_coeffcient_df.m\n")
+                # cat(str(linearModel_abs_ASE_coeffcient_df.m))
                 # cat("\n")
                 # 
                 
-                FC_slope<-round(linearModel_abs_Vockley_REF_coeffcient_df.m$value[which(linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters== "Estimate" &
-                                                                                          linearModel_abs_Vockley_REF_coeffcient_df.m$Terms == "abs_Vockley_REF")],2)
+                FC_slope<-round(linearModel_abs_ASE_coeffcient_df.m$value[which(linearModel_abs_ASE_coeffcient_df.m$Parameters== "Estimate" &
+                                                                                          linearModel_abs_ASE_coeffcient_df.m$Terms == "abs_ASE")],2)
                 
                 
                 # cat("FC_slope\n")
@@ -1829,15 +2013,15 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
                 # cat("\n")
                 
                 
-                FC_intercept<-round(linearModel_abs_Vockley_REF_coeffcient_df.m$value[which(linearModel_abs_Vockley_REF_coeffcient_df.m$Parameters== "Estimate" &
-                                                                                              linearModel_abs_Vockley_REF_coeffcient_df.m$Terms == "(Intercept)")],2)
+                FC_intercept<-round(linearModel_abs_ASE_coeffcient_df.m$value[which(linearModel_abs_ASE_coeffcient_df.m$Parameters== "Estimate" &
+                                                                                              linearModel_abs_ASE_coeffcient_df.m$Terms == "(Intercept)")],2)
                 
                 
                 # cat("FC_intercept\n")
                 # cat(str(FC_intercept))
                 # cat("\n")
                 
-                A.df<-as.data.frame(cbind(phenotype_array_sel,"abs_Vockley_REF",FC_slope,FC_intercept,dim(Element_collapse_CT_CLASS_Lineage_phenotype_sel_ACTIVE)[1],r.squared_linearModel_abs_Vockley_REF))
+                A.df<-as.data.frame(cbind(phenotype_array_sel,"abs_ASE",FC_slope,FC_intercept,dim(Element_collapse_CT_CLASS_Lineage_phenotype_sel_ACTIVE)[1],r.squared_linearModel_abs_ASE))
                 
                 # cat("A.df\n")
                 # cat(str(A.df))
@@ -1849,7 +2033,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
                 # cat(str(A.df))
                 # cat("\n")
                 
-                list_LM_abs_Vockley_REF_phenotype[[m]]<-A.df
+                list_LM_abs_ASE_phenotype[[m]]<-A.df
                 
                 
                 
@@ -2035,17 +2219,17 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
             
           }
           
-          if(length(list_LM_abs_Vockley_REF_phenotype) >0)
+          if(length(list_LM_abs_ASE_phenotype) >0)
           {
-            LM_abs_Vockley_REF_phenotype = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_phenotype, fill = T)))
+            LM_abs_ASE_phenotype = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_phenotype, fill = T)))
             
-            LM_abs_Vockley_REF_phenotype$Lineage<-Lineage_array_sel
+            LM_abs_ASE_phenotype$Lineage<-Lineage_array_sel
             
-            cat("LM_abs_Vockley_REF_phenotype\n")
-            cat(str(LM_abs_Vockley_REF_phenotype))
+            cat("LM_abs_ASE_phenotype\n")
+            cat(str(LM_abs_ASE_phenotype))
             cat("\n")
             
-            list_LM_abs_Vockley_REF_Lineage[[l]]<-LM_abs_Vockley_REF_phenotype
+            list_LM_abs_ASE_Lineage[[l]]<-LM_abs_ASE_phenotype
             
           }
           
@@ -2078,17 +2262,17 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
           list_LM_FC_CLASSES[[k]]<-LM_FC_LINEAGE
         }
         
-        if(length(list_LM_abs_Vockley_REF_Lineage) >0)
+        if(length(list_LM_abs_ASE_Lineage) >0)
         {
-          LM_abs_Vockley_REF_LINEAGE = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_Lineage, fill = T)))
+          LM_abs_ASE_LINEAGE = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_Lineage, fill = T)))
           
-          LM_abs_Vockley_REF_LINEAGE$CLASS_COMPARISON<-AT_LEAST_CLASSES_sel
+          LM_abs_ASE_LINEAGE$CLASS_COMPARISON<-AT_LEAST_CLASSES_sel
           
-          cat("LM_abs_Vockley_REF_LINEAGE\n")
-          cat(str(LM_abs_Vockley_REF_LINEAGE))
+          cat("LM_abs_ASE_LINEAGE\n")
+          cat(str(LM_abs_ASE_LINEAGE))
           cat("\n")
           
-          list_LM_abs_Vockley_REF_CLASSES[[k]]<-LM_abs_Vockley_REF_LINEAGE
+          list_LM_abs_ASE_CLASSES[[k]]<-LM_abs_ASE_LINEAGE
         }
         
         if(length(list_STATS_Lineage) >0)
@@ -2108,17 +2292,17 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
       # quit(status = 1)
     }# k AT_LEAST_CLASSES_sel
     
-    if(length(list_LM_abs_Vockley_REF_CLASSES) >0)
+    if(length(list_LM_abs_ASE_CLASSES) >0)
     {
-      LM_abs_Vockley_REF_CLASSES = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_CLASSES, fill = T)))
+      LM_abs_ASE_CLASSES = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_CLASSES, fill = T)))
       
-      LM_abs_Vockley_REF_CLASSES$Cell_Type<-Cell_Types_array_sel
+      LM_abs_ASE_CLASSES$Cell_Type<-Cell_Types_array_sel
       
-      cat("LM_abs_Vockley_REF_CLASSES\n")
-      cat(str(LM_abs_Vockley_REF_CLASSES))
+      cat("LM_abs_ASE_CLASSES\n")
+      cat(str(LM_abs_ASE_CLASSES))
       cat("\n")
       
-      list_LM_abs_Vockley_REF_DEF[[i]]<-LM_abs_Vockley_REF_CLASSES
+      list_LM_abs_ASE_DEF[[i]]<-LM_abs_ASE_CLASSES
     }
     
     if(length(list_LM_FC_CLASSES) >0)
@@ -2150,17 +2334,17 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
     
   }#i Cell_Types_array[i]
   
-  if(length(list_LM_abs_Vockley_REF_DEF) >0)
+  if(length(list_LM_abs_ASE_DEF) >0)
   {
-    LM_abs_Vockley_REF_CT = unique(as.data.frame(data.table::rbindlist(list_LM_abs_Vockley_REF_DEF, fill = T)))
+    LM_abs_ASE_CT = unique(as.data.frame(data.table::rbindlist(list_LM_abs_ASE_DEF, fill = T)))
     
     
-    cat("LM_abs_Vockley_REF_CT\n")
-    cat(str(LM_abs_Vockley_REF_CT))
+    cat("LM_abs_ASE_CT\n")
+    cat(str(LM_abs_ASE_CT))
     cat("\n")
-    cat(sprintf(as.character(names(summary(as.factor(LM_abs_Vockley_REF_CT$Cell_Type))))))
+    cat(sprintf(as.character(names(summary(as.factor(LM_abs_ASE_CT$Cell_Type))))))
     cat("\n")
-    cat(sprintf(as.character(summary(as.factor(LM_abs_Vockley_REF_CT$Cell_Type)))))
+    cat(sprintf(as.character(summary(as.factor(LM_abs_ASE_CT$Cell_Type)))))
     cat("\n")
     
   }
@@ -2180,7 +2364,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
     
   }
   
-  LM_DEF<-rbind(LM_FC_CT,LM_abs_Vockley_REF_CT)
+  LM_DEF<-rbind(LM_FC_CT,LM_abs_ASE_CT)
   cat("LM_DEF\n")
   cat(str(LM_DEF))
   cat("\n")
@@ -2203,7 +2387,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
   
   #### SAVE ----
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -2229,8 +2413,7 @@ ggridge_E_Plus_ASE_CLASS = function(option_list)
   
 }
 
-
-print_join = function(option_list)
+PUT_TOGETHER = function(option_list)
 {
   #### READ and transform type ----
   
@@ -2250,10 +2433,18 @@ print_join = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   ##### E_Plus_ASE stacked barplot ----
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -2364,6 +2555,9 @@ main = function() {
     make_option(c("--out"), type="character", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
+                metavar="type", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--TOME_correspondence"), type="character", default=NULL,
                 metavar="FILE.txt",
                 help="Path to tab-separated input file listing regions to analyze. Required."),
@@ -2373,7 +2567,7 @@ main = function() {
     make_option(c("--MPRA_Real_tile_QC2_PASS"), type="character", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
-    make_option(c("--KEY_collpase_Plus_Variant_lineage_CLASSIFICATION"), type="character", default=NULL,
+    make_option(c("--CUMMULATIVE_CLASSES"), type="character", default=NULL,
                 metavar="FILE.txt",
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--finemap_prob_Threshold"), type="numeric", default=NULL, 
@@ -2394,10 +2588,10 @@ main = function() {
   
   
   data_wrangling(opt)
-  data_wrangling_FC_Vockley_REF(opt)
-  ggridge_enhancer_CLASS(opt)
-  ggridge_E_Plus_ASE_CLASS(opt)
-  print_join(opt)
+  data_wrangling_FC_ASE(opt)
+  data_wrangling_enhancer_CLASS(opt)
+  data_wrangling_E_Plus_ASE_CLASS(opt)
+  PUT_TOGETHER(opt)
  
 }
   

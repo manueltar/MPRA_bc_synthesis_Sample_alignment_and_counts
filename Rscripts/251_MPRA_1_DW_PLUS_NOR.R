@@ -1483,9 +1483,6 @@ regularize_matrixes = function(option_list)
                 type_array_sel<-type_array[k]
                 
                 
-                cat("------------------------->")
-                cat(sprintf(as.character(type_array_sel)))
-                cat("\n")
                 
                 
                 condition_type_sel<-condition_sel[which(condition_sel$type == type_array_sel),]

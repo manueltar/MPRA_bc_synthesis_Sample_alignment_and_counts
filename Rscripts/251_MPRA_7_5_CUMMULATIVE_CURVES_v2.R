@@ -30,6 +30,618 @@ opt = NULL
 
 options(warn=1)
 
+cummulative_CLASSIF_with_ctrls = function(option_list)
+{
+  
+  #### READ and transform type ----
+  
+  type = opt$type
+  
+  cat("TYPE_\n")
+  cat(sprintf(as.character(type)))
+  cat("\n")
+  
+  
+  
+  #### READ and transform out ----
+  
+  out = opt$out
+  
+  cat("OUT_\n")
+  cat(sprintf(as.character(out)))
+  cat("\n")
+  
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
+  #### ACTIVE_TILES ----
+  
+  ACTIVE_TILES<-as.data.frame(fread(file=opt$ACTIVE_TILES, sep="\t", header = T), stringsAsFactors = F)
+  
+  
+  cat("ACTIVE_TILES\n")
+  cat(str(ACTIVE_TILES))
+  cat("\n")
+  
+  
+  ACTIVE_TILES$KEY<-gsub(";.+$","",ACTIVE_TILES$REAL_TILE_Plus_carried_variants)
+  ACTIVE_TILES$KEY<-gsub("__.+$","",ACTIVE_TILES$KEY)
+  
+  
+  cat("ACTIVE_TILES_sandwich\n")
+  cat(str(ACTIVE_TILES))
+  cat("\n")
+  
+  
+  ACTIVE_TILES$carried_variants<-gsub("[^;]+;","",ACTIVE_TILES$REAL_TILE_Plus_carried_variants)
+  
+  cat("ACTIVE_TILES_2\n")
+  cat(str(ACTIVE_TILES))
+  cat("\n")
+  
+  ACTIVE_TILES$KEY_Plus_carried_variants<-paste(ACTIVE_TILES$KEY,ACTIVE_TILES$carried_variants,sep=";")
+  
+  cat("ACTIVE_TILES_3\n")
+  cat(str(ACTIVE_TILES))
+  cat("\n")
+  
+  # ##############################################################
+  # quit(status = 1)
+  
+  
+  #### READ DATA----
+  
+  setwd(out2)
+  
+  filename<-paste('Element_collapse','.rds',sep='')
+  
+  KEY_collapse<-readRDS(file=filename)
+  
+  cat("KEY_collapse_0\n")
+  cat(str(KEY_collapse))
+  cat("\n")
+  cat(str(unique(KEY_collapse$VAR)))
+  cat("\n")
+  cat(sprintf(as.character(names(summary(KEY_collapse$Label_2)))))
+  cat("\n")
+  cat(sprintf(as.character(summary(KEY_collapse$Label_2))))
+  cat("\n")
+  
+  
+  check_NCGR<-KEY_collapse[which(KEY_collapse$Label_2 == "NCGR"),]
+  
+  cat("check_NCGR_0\n")
+  cat(str(check_NCGR))
+  cat("\n")
+  cat(str(unique(check_NCGR$VAR)))
+  cat("\n")
+  cat(str(unique(check_NCGR$KEY_Plus_carried_variants)))
+  cat("\n")
+  cat(sprintf(as.character(names(summary(check_NCGR$Label_2)))))
+  cat("\n")
+  cat(sprintf(as.character(summary(check_NCGR$Label_2))))
+  cat("\n")
+  
+  
+  
+  setwd(out)
+  
+  filename<-paste('df_Cell_colors','.rds',sep='')
+  
+  df_Cell_colors<-readRDS(file=filename)
+  
+  cat("df_Cell_colors_0\n")
+  cat(str(df_Cell_colors))
+  cat("\n")
+  
+  # #########################################
+  # quit(status = 1)
+  
+  ############ ALL CT CLASSIFICATION ----
+  
+  
+  array_Elements<-KEY_collapse$KEY_Plus_carried_variants
+  
+  cat("array_Elements\n")
+  cat(str(array_Elements))
+  cat("\n")
+  
+  
+  check_NCGR_2<-array_Elements[which(array_Elements%in%check_NCGR$KEY_Plus_carried_variants)]
+  
+  cat("check_NCGR\n")
+  cat(str(check_NCGR))
+  cat("\n")
+  
+  
+  
+  
+  Condition_DEBUG <- 0
+  
+  list_ALL_CT<-list()
+  
+ 
+  
+  for(i in 1:length(array_Elements))
+  {
+    array_Elements_sel<-array_Elements[i]
+    
+    cat("---------------------------------------->\t")
+    cat(sprintf(as.character(array_Elements_sel)))
+    cat("\n")
+    
+    if(array_Elements_sel == "Element_87;NCGR")
+    {
+      
+      Condition_DEBUG <- 1
+    }
+    
+  
+    
+    KEY_collapse_sel<-KEY_collapse[which(KEY_collapse$KEY_Plus_carried_variants == array_Elements_sel),]
+    
+    if(Condition_DEBUG == 1)
+    {
+      cat("KEY_collapse_sel\n")
+      cat(str(KEY_collapse_sel))
+      cat("\n")
+      cat(sprintf(as.character(colnames(KEY_collapse_sel))))
+      cat("\n")
+    }
+    
+    
+    indx.int <- which(colnames(KEY_collapse_sel)%in%c("KEY_Plus_carried_variants","KEY","carried_variants","VAR","chr","Label","Label_2","VEP_DEF_LABELS","factor4_CLASS"))
+    
+    KEY_subset<-unique(KEY_collapse_sel[,indx.int])
+    
+    if(Condition_DEBUG == 1)
+    {
+      cat("KEY_subset\n")
+      cat(str(KEY_subset))
+      cat("\n")
+    }
+    
+    ACTIVE_TILES_sel<-ACTIVE_TILES[which(ACTIVE_TILES$KEY_Plus_carried_variants%in%KEY_collapse_sel$KEY_Plus_carried_variants),]
+    
+    if(Condition_DEBUG == 1)
+    {
+      cat("ACTIVE_TILES_sel\n")
+      cat(str(ACTIVE_TILES_sel))
+      cat("\n")
+    }
+    
+   
+    
+    if(dim(ACTIVE_TILES_sel)[1] >0)
+    {
+      
+      ### ALL_CT_enhancer
+      
+      enhancer_labels<-c("enhancer")
+      
+      
+      ACTIVE_TILES_sel_enhancer<-ACTIVE_TILES_sel[which(ACTIVE_TILES_sel$CLASS_enhancer%in%enhancer_labels),]
+      
+      
+      # cat("ACTIVE_TILES_sel_enhancer\n")
+      # cat(str(ACTIVE_TILES_sel_enhancer))
+      # cat("\n")
+      
+      if(dim(ACTIVE_TILES_sel_enhancer)[1] >0)
+      {
+        
+        
+        EVERY_CT_enhancer<-ACTIVE_TILES_sel_enhancer
+        
+        # cat("EVERY_CT_enhancer\n")
+        # cat(str(EVERY_CT_enhancer))
+        # cat("\n")
+        
+        EVERY_CT_enhancer.dt<-data.table(EVERY_CT_enhancer, key=c("KEY_Plus_carried_variants","Cell_Type"))
+        
+        
+        EVERY_CT_enhancer_Fq<-as.data.frame(EVERY_CT_enhancer.dt[,.(enhancer_CLASS_TILES=.N),
+                                                                 by=key(EVERY_CT_enhancer.dt)], stringsAsFactors=F)
+        
+        
+        
+        
+        
+        # cat("EVERY_CT_enhancer_Fq_\n")
+        # cat(str(EVERY_CT_enhancer_Fq))
+        # cat("\n")
+        
+        
+        
+        
+        ALL_CT_enhancer.dt<-data.table(EVERY_CT_enhancer, key=c("REAL_TILE_Plus_carried_variants"))
+        
+        
+        ALL_CT_enhancer_Fq<-as.data.frame(ALL_CT_enhancer.dt[,.(enhancer_CLASS_TILES=.N),
+                                                             by=key(ALL_CT_enhancer.dt)], stringsAsFactors=F)
+        
+        
+        
+        ALL_enhancer<-as.data.frame(cbind(dim(ALL_CT_enhancer_Fq)[1],"ALL_CT"), stringAsFactors=F)
+        
+        colnames(ALL_enhancer)<-c("enhancer_CLASS_TILES","Cell_Type")
+        
+        ALL_enhancer$KEY_Plus_carried_variants<-array_Elements_sel
+        
+        # cat("ALL_enhancer_\n")
+        # cat(str(ALL_enhancer))
+        # cat("\n")
+        
+        FINAL_enhancer<-rbind(EVERY_CT_enhancer_Fq,ALL_enhancer)
+        
+        # cat("FINAL_enhancer_\n")
+        # cat(str(FINAL_enhancer))
+        # cat("\n")
+        
+        
+        # ############################################################
+        # quit(status = 1)   
+        
+        
+        
+        
+      }#dim(ACTIVE_TILES_sel_enhancer)[1] >0
+      else{
+        
+        FINAL_enhancer<-as.data.frame(cbind(rep(array_Elements_sel,5),rep(0,5),c("K562","CHRF","HL60","THP1","ALL_CT")))
+        colnames(FINAL_enhancer)<-c("KEY_Plus_carried_variants","enhancer_CLASS_TILES","Cell_Type")
+        
+        
+      }
+      
+      # cat("FINAL_enhancer_\n")
+      # cat(str(FINAL_enhancer))
+      # cat("\n")
+      
+      ### ALL_CT_ASE
+      
+      ASE_labels<-c("ASE")
+      
+      
+      ACTIVE_TILES_sel_ASE<-ACTIVE_TILES_sel[which(ACTIVE_TILES_sel$CLASS_ASE%in%ASE_labels),]
+      
+      
+      # cat("ACTIVE_TILES_sel_ASE\n")
+      # cat(str(ACTIVE_TILES_sel_ASE))
+      # cat("\n")
+      
+      if(dim(ACTIVE_TILES_sel_ASE)[1] >0)
+      {
+        
+        
+        EVERY_CT_ASE<-ACTIVE_TILES_sel_ASE
+        
+        # cat("EVERY_CT_ASE\n")
+        # cat(str(EVERY_CT_ASE))
+        # cat("\n")
+        
+        EVERY_CT_ASE.dt<-data.table(EVERY_CT_ASE, key=c("KEY_Plus_carried_variants","Cell_Type"))
+        
+        
+        EVERY_CT_ASE_Fq<-as.data.frame(EVERY_CT_ASE.dt[,.(ASE_CLASS_TILES=.N),
+                                                       by=key(EVERY_CT_ASE.dt)], stringsAsFactors=F)
+        
+        
+        
+        
+        
+        # cat("EVERY_CT_ASE_Fq_\n")
+        # cat(str(EVERY_CT_ASE_Fq))
+        # cat("\n")
+        
+        
+        
+        
+        ALL_CT_ASE.dt<-data.table(EVERY_CT_ASE, key=c("REAL_TILE_Plus_carried_variants"))
+        
+        
+        ALL_CT_ASE_Fq<-as.data.frame(ALL_CT_ASE.dt[,.(ASE_CLASS_TILES=.N),
+                                                   by=key(ALL_CT_ASE.dt)], stringsAsFactors=F)
+        
+        
+        
+        ALL_ASE<-as.data.frame(cbind(dim(ALL_CT_ASE_Fq)[1],"ALL_CT"), stringAsFactors=F)
+        
+        colnames(ALL_ASE)<-c("ASE_CLASS_TILES","Cell_Type")
+        
+        ALL_ASE$KEY_Plus_carried_variants<-array_Elements_sel
+        
+        # cat("ALL_ASE_\n")
+        # cat(str(ALL_ASE))
+        # cat("\n")
+        
+        FINAL_ASE<-rbind(EVERY_CT_ASE_Fq,ALL_ASE)
+        
+        # cat("FINAL_ASE_\n")
+        # cat(str(FINAL_ASE))
+        # cat("\n")
+        
+        
+        # ############################################################
+        # quit(status = 1)   
+        
+        
+        
+        
+      }#dim(ACTIVE_TILES_sel_ASE)[1] >0
+      else{
+        
+        FINAL_ASE<-as.data.frame(cbind(rep(array_Elements_sel,5),rep(0,5),c("K562","CHRF","HL60","THP1","ALL_CT")))
+        colnames(FINAL_ASE)<-c("KEY_Plus_carried_variants","ASE_CLASS_TILES","Cell_Type")
+        
+        
+      }
+      
+      # cat("FINAL_ASE_\n")
+      # cat(str(FINAL_ASE))
+      # cat("\n")
+      
+      ### ALL_CT_E_Plus_ASE
+      
+      E_Plus_ASE_labels<-c("E_Plus_ASE")
+      
+      
+      ACTIVE_TILES_sel_E_Plus_ASE<-ACTIVE_TILES_sel[which(ACTIVE_TILES_sel$CLASS_E_Plus_ASE%in%E_Plus_ASE_labels),]
+      
+      
+      # cat("ACTIVE_TILES_sel_E_Plus_ASE\n")
+      # cat(str(ACTIVE_TILES_sel_E_Plus_ASE))
+      # cat("\n")
+      
+      if(dim(ACTIVE_TILES_sel_E_Plus_ASE)[1] >0)
+      {
+        
+        
+        EVERY_CT_E_Plus_ASE<-ACTIVE_TILES_sel_E_Plus_ASE
+        
+        # cat("EVERY_CT_E_Plus_ASE\n")
+        # cat(str(EVERY_CT_E_Plus_ASE))
+        # cat("\n")
+        
+        EVERY_CT_E_Plus_ASE.dt<-data.table(EVERY_CT_E_Plus_ASE, key=c("KEY_Plus_carried_variants","Cell_Type"))
+        
+        
+        EVERY_CT_E_Plus_ASE_Fq<-as.data.frame(EVERY_CT_E_Plus_ASE.dt[,.(E_Plus_ASE_CLASS_TILES=.N),
+                                                                     by=key(EVERY_CT_E_Plus_ASE.dt)], stringsAsFactors=F)
+        
+        
+        
+        
+        
+        # cat("EVERY_CT_E_Plus_ASE_Fq_\n")
+        # cat(str(EVERY_CT_E_Plus_ASE_Fq))
+        # cat("\n")
+        
+        
+        
+        
+        ALL_CT_E_Plus_ASE.dt<-data.table(EVERY_CT_E_Plus_ASE, key=c("REAL_TILE_Plus_carried_variants"))
+        
+        
+        ALL_CT_E_Plus_ASE_Fq<-as.data.frame(ALL_CT_E_Plus_ASE.dt[,.(E_Plus_ASE_CLASS_TILES=.N),
+                                                                 by=key(ALL_CT_E_Plus_ASE.dt)], stringsAsFactors=F)
+        
+        
+        
+        ALL_E_Plus_ASE<-as.data.frame(cbind(dim(ALL_CT_E_Plus_ASE_Fq)[1],"ALL_CT"), stringAsFactors=F)
+        
+        colnames(ALL_E_Plus_ASE)<-c("E_Plus_ASE_CLASS_TILES","Cell_Type")
+        
+        ALL_E_Plus_ASE$KEY_Plus_carried_variants<-array_Elements_sel
+        
+        # cat("ALL_E_Plus_ASE_\n")
+        # cat(str(ALL_E_Plus_ASE))
+        # cat("\n")
+        
+        FINAL_E_Plus_ASE<-rbind(EVERY_CT_E_Plus_ASE_Fq,ALL_E_Plus_ASE)
+        
+        # cat("FINAL_E_Plus_ASE_\n")
+        # cat(str(FINAL_E_Plus_ASE))
+        # cat("\n")
+        
+        
+        # ############################################################
+        # quit(status = 1)   
+        
+        
+        
+        
+      }#dim(ACTIVE_TILES_sel_E_Plus_ASE)[1] >0
+      else{
+        
+        FINAL_E_Plus_ASE<-as.data.frame(cbind(rep(array_Elements_sel,5),rep(0,5),c("K562","CHRF","HL60","THP1","ALL_CT")))
+        colnames(FINAL_E_Plus_ASE)<-c("KEY_Plus_carried_variants","E_Plus_ASE_CLASS_TILES","Cell_Type")
+        
+        
+      }
+      
+      # cat("FINAL_E_Plus_ASE_\n")
+      # cat(str(FINAL_E_Plus_ASE))
+      # cat("\n")
+      
+      #### ALL 
+      
+      ALL_DEF<-merge(FINAL_enhancer,FINAL_ASE,
+                     by=c("KEY_Plus_carried_variants","Cell_Type"),
+                     all=T)
+      
+      ALL_DEF<-merge(ALL_DEF,FINAL_E_Plus_ASE,
+                     by=c("KEY_Plus_carried_variants","Cell_Type"),
+                     all=T)
+      
+      
+      ALL_DEF$enhancer_CLASS_TILES<-as.numeric(ALL_DEF$enhancer_CLASS_TILES)
+      ALL_DEF$ASE_CLASS_TILES<-as.numeric(ALL_DEF$ASE_CLASS_TILES)
+      ALL_DEF$E_Plus_ASE_CLASS_TILES<-as.numeric(ALL_DEF$E_Plus_ASE_CLASS_TILES)
+      
+      ALL_DEF[is.na(ALL_DEF)]<-0
+      
+      # cat("ALL_DEF_0\n")
+      # cat(str(ALL_DEF))
+      # cat("\n")
+      
+      
+      ALL_DEF<-merge(KEY_subset,
+                     ALL_DEF,
+                     by="KEY_Plus_carried_variants",
+                     all.y=T)
+      
+      # cat("ALL_DEF_1\n")
+      # cat(str(ALL_DEF))
+      # cat("\n")
+      
+      
+      # ######################################################################
+      # quit(status = 1)
+      
+      check_1<-max(ALL_DEF$enhancer_CLASS_TILES)
+      
+      if(check_1 > 5)
+      {
+        
+        ######################################################################
+        quit(status = 1)
+      }
+      
+      
+      check_2<-max(ALL_DEF$ASE_CLASS_TILES)
+      
+      if(check_2 > 5)
+      {
+        setwd(out)
+        write.table(ACTIVE_TILES_sel_ASE, file="test.tsv",sep="\t",quote=F,row.names = F)
+        
+        ######################################################################
+        quit(status = 1)
+      }
+      
+      check_3<-max(ALL_DEF$E_Plus_ASE_CLASS_TILES)
+      
+      if(check_3 > 5)
+      {
+        
+        ######################################################################
+        quit(status = 1)
+      }
+      
+      
+      
+      
+      list_ALL_CT[[i]]<-ALL_DEF
+      
+    }else{
+      
+      FINAL_enhancer<-as.data.frame(cbind(rep(array_Elements_sel,5),rep(0,5),c("K562","CHRF","HL60","THP1","ALL_CT")))
+      colnames(FINAL_enhancer)<-c("KEY_Plus_carried_variants","enhancer_CLASS_TILES","Cell_Type")
+      
+      FINAL_ASE<-as.data.frame(cbind(rep(array_Elements_sel,5),rep(0,5),c("K562","CHRF","HL60","THP1","ALL_CT")))
+      colnames(FINAL_ASE)<-c("KEY_Plus_carried_variants","ASE_CLASS_TILES","Cell_Type")
+      
+      FINAL_E_Plus_ASE<-as.data.frame(cbind(rep(array_Elements_sel,5),rep(0,5),c("K562","CHRF","HL60","THP1","ALL_CT")))
+      colnames(FINAL_E_Plus_ASE)<-c("KEY_Plus_carried_variants","E_Plus_ASE_CLASS_TILES","Cell_Type")
+      
+      #### ALL 
+      
+      ALL_DEF<-merge(FINAL_enhancer,FINAL_ASE,
+                     by=c("KEY_Plus_carried_variants","Cell_Type"),
+                     all=T)
+      
+      ALL_DEF<-merge(ALL_DEF,FINAL_E_Plus_ASE,
+                     by=c("KEY_Plus_carried_variants","Cell_Type"),
+                     all=T)
+      
+      
+      ALL_DEF$enhancer_CLASS_TILES<-as.numeric(ALL_DEF$enhancer_CLASS_TILES)
+      ALL_DEF$ASE_CLASS_TILES<-as.numeric(ALL_DEF$ASE_CLASS_TILES)
+      ALL_DEF$E_Plus_ASE_CLASS_TILES<-as.numeric(ALL_DEF$E_Plus_ASE_CLASS_TILES)
+      
+      ALL_DEF[is.na(ALL_DEF)]<-0
+      
+      if(Condition_DEBUG == 1)
+      {
+        cat("ALL_DEF_0\n")
+        cat(str(ALL_DEF))
+        cat("\n")
+      }
+      
+      
+      ALL_DEF<-merge(KEY_subset,
+                     ALL_DEF,
+                     by="KEY_Plus_carried_variants",
+                     all.y=T)
+      
+      
+      list_ALL_CT[[i]]<-ALL_DEF
+      
+      
+      }# dim(ACTIVE_TILES_sel)[1] >0
+    
+    if(array_Elements_sel == "Element_87;NCGR")
+    {
+      # quit(status = 1)
+    }
+  }#i
+  
+  
+  
+  ALL_CT_df = unique(as.data.frame(data.table::rbindlist(list_ALL_CT, fill=T), stringsAsFactors=F))
+  
+  
+  
+  cat("ALL_CT_df_0\n")
+  cat(str(ALL_CT_df))
+  cat("\n")
+  
+  ALL_CT_df$Cell_Type<-factor(ALL_CT_df$Cell_Type,
+                              levels=c("ALL_CT","K562","CHRF","HL60","THP1"),
+                              ordered=T)
+  
+  ##################### CORRECTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
+  ALL_CT_df$ASE_CLASS_TILES[which(ALL_CT_df$ASE_CLASS_TILES < ALL_CT_df$E_Plus_ASE_CLASS_TILES)]<-ALL_CT_df$E_Plus_ASE_CLASS_TILES[which(ALL_CT_df$ASE_CLASS_TILES < ALL_CT_df$E_Plus_ASE_CLASS_TILES)]
+  
+  cat("ALL_CT_df_1\n")
+  cat(str(ALL_CT_df))
+  cat("\n")
+  cat(sprintf(as.character(names(summary(ALL_CT_df$Label_2)))))
+  cat("\n")
+  cat(sprintf(as.character(summary(ALL_CT_df$Label_2))))
+  cat("\n")
+  
+  path5<-paste(out2,'cummulative_plots','/', sep='')
+  
+  cat("path5\n")
+  cat(sprintf(as.character(path5)))
+  cat("\n")
+  
+  
+  if (file.exists(path5)){
+    
+    
+    
+    
+  } else {
+    dir.create(file.path(path5))
+    
+  }
+  
+  setwd(path5)
+  
+  saveRDS(ALL_CT_df,file="cummulative_classification_with_CTRLS.rds")
+  
+  
+  # quit(status = 1)
+}
 
 cummulative_CLASSIF = function(option_list)
 {
@@ -52,7 +664,13 @@ cummulative_CLASSIF = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
   
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
   
   #### ACTIVE_TILES ----
   
@@ -91,7 +709,7 @@ cummulative_CLASSIF = function(option_list)
  
   #### READ DATA----
  
-  setwd(out)
+  setwd(out2)
   
   filename<-paste('Element_collapse','.rds',sep='')
   
@@ -101,6 +719,7 @@ cummulative_CLASSIF = function(option_list)
   cat(str(KEY_collapse))
   cat("\n")
   
+  setwd(out)
   
   filename<-paste('df_Cell_colors','.rds',sep='')
   
@@ -156,7 +775,7 @@ cummulative_CLASSIF = function(option_list)
     # cat("\n")
     
     
-    indx.int <- which(colnames(KEY_collapse_EXCLUDED_other_labels_sel)%in%c("KEY_Plus_carried_variants","KEY","carried_variants","VAR","chr","Label","Label_2","VEP_DEF_LABELS"))
+    indx.int <- which(colnames(KEY_collapse_EXCLUDED_other_labels_sel)%in%c("KEY_Plus_carried_variants","KEY","carried_variants","VAR","chr","Label","Label_2","VEP_DEF_LABELS","factor4_CLASS"))
 
     KEY_subset<-unique(KEY_collapse_EXCLUDED_other_labels_sel[,indx.int])
 
@@ -519,7 +1138,7 @@ cummulative_CLASSIF = function(option_list)
    cat(str(ALL_CT_df))
    cat("\n")
    
-   path5<-paste(out,'cummulative_plots','/', sep='')
+   path5<-paste(out2,'cummulative_plots','/', sep='')
    
    cat("path5\n")
    cat(sprintf(as.character(path5)))
@@ -563,6 +1182,14 @@ cummulative_PLOTS_enhancer = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   setwd(out)
   
   
@@ -577,7 +1204,7 @@ cummulative_PLOTS_enhancer = function(option_list)
   
   #### rEAD DATA ----
   
-  path5<-paste(out,'cummulative_plots','/', sep='')
+  path5<-paste(out2,'cummulative_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -780,6 +1407,14 @@ cummulative_PLOTS_ASE = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   setwd(out)
   
   
@@ -794,7 +1429,7 @@ cummulative_PLOTS_ASE = function(option_list)
   
   #### rEAD DATA ----
   
-  path5<-paste(out,'cummulative_plots','/', sep='')
+  path5<-paste(out2,'cummulative_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -997,6 +1632,13 @@ cummulative_PLOTS_E_Plus_ASE = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
   setwd(out)
   
   
@@ -1011,7 +1653,7 @@ cummulative_PLOTS_E_Plus_ASE = function(option_list)
   
   #### rEAD DATA ----
   
-  path5<-paste(out,'cummulative_plots','/', sep='')
+  path5<-paste(out2,'cummulative_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -1216,6 +1858,9 @@ main = function() {
     make_option(c("--out"), type="character", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
+                metavar="type", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--MPRA_Real_tile_QC2_PASS"), type="character", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
@@ -1240,7 +1885,7 @@ main = function() {
   opt <<- parse_args(parser)
   
   
-  
+  cummulative_CLASSIF_with_ctrls(opt)
   cummulative_CLASSIF(opt)
   cummulative_PLOTS_enhancer(opt)
   cummulative_PLOTS_ASE(opt)

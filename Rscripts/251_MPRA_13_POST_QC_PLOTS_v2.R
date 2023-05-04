@@ -66,6 +66,14 @@ ggridge.graphs = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   
 
   #### MPRA Real Tile ----
@@ -145,7 +153,7 @@ ggridge.graphs = function(option_list)
   
   #### READ INPUT FILES ----
   
-  setwd(out)
+  setwd(out2)
   
   
   
@@ -169,6 +177,8 @@ ggridge.graphs = function(option_list)
   # cat(str(list_medians))
   # cat("\n")
   
+  setwd(out)
+  
   filename_1<-paste("Rosetta_df",".rds", sep='')
   
   
@@ -189,7 +199,7 @@ ggridge.graphs = function(option_list)
   
   #### path2 ----
   
-  path2<-paste(out,'POST_QC_graphs','/', sep='')
+  path2<-paste(out2,'POST_QC_graphs','/', sep='')
   
   cat("path2\n")
   cat(sprintf(as.character(path2)))
@@ -297,7 +307,7 @@ ggridge.graphs = function(option_list)
     cat("\n")
     
     
-    special_features<-c("LogFC","Vockley_REF","dna.REF.vs.dna.ALT","rna.REF.vs.rna.ALT")
+    special_features<-c("LogFC","ASE","dna.REF.vs.dna.ALT","rna.REF.vs.rna.ALT")
     
     indx.feature<-"NA"
     
@@ -558,7 +568,7 @@ ggridge.graphs = function(option_list)
                height=10, width=12)
       }
       
-      if(features_sel == "Vockley_REF")
+      if(features_sel == "ASE")
       {
         
         # list_values_sel_subset_1<-list_values_sel[which(list_values_sel[,indx.feature] >= 1.1 & list_values_sel[,indx.feature] < 10),]
@@ -705,6 +715,14 @@ corr.graphs = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   
   #### MPRA Real Tile ----
   
@@ -783,7 +801,7 @@ corr.graphs = function(option_list)
   
   #### READ INPUT FILES ----
   
-  setwd(out)
+  setwd(out2)
   
   
   
@@ -807,6 +825,8 @@ corr.graphs = function(option_list)
   # cat(str(list_medians))
   # cat("\n")
   
+  setwd(out)
+  
   filename_1<-paste("Rosetta_df",".rds", sep='')
   
   
@@ -827,7 +847,7 @@ corr.graphs = function(option_list)
   
   #### path2 ----
   
-  path2<-paste(out,'POST_QC_graphs','/', sep='')
+  path2<-paste(out2,'POST_QC_graphs','/', sep='')
   
   cat("path2\n")
   cat(sprintf(as.character(path2)))
@@ -877,7 +897,7 @@ corr.graphs = function(option_list)
     cat(str(list_values_sel))
     cat("\n")
     
-    special_features<-c("LogFC","Vockley_REF","dna.REF.vs.dna.ALT","rna.REF.vs.rna.ALT")
+    special_features<-c("LogFC","ASE","dna.REF.vs.dna.ALT","rna.REF.vs.rna.ALT")
     
     indx.feature<-"NA"
     
@@ -1192,8 +1212,8 @@ corr.graphs = function(option_list)
       scale_y_discrete(name=NULL, drop=F)+
       theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                        size = 12, hjust = 1))+
-      geom_hline(yintercept = FINAL_COORDS, linetype=3, color="black")+
-      geom_vline(xintercept = FINAL_COORDS, linetype=3, color="black")+
+      geom_hline(yintercept = FINAL_COORDS, linetype=1, color="black")+
+      geom_vline(xintercept = FINAL_COORDS, linetype=1, color="black")+
       coord_fixed()
     
     
@@ -1290,7 +1310,7 @@ corr.graphs = function(option_list)
     
   
     
-    if(features_sel == "LogFC" | features_sel == "Vockley_REF")
+    if(features_sel == "LogFC" | features_sel == "ASE")
     {
       if(features_sel == "LogFC")
       {
@@ -1300,7 +1320,7 @@ corr.graphs = function(option_list)
         
       }
       
-      if(features_sel == "Vockley_REF")
+      if(features_sel == "ASE")
       {
         list_values_sel_subset<-list_values_sel[which(list_values_sel$REAL_TILE_Plus_carried_variants%in%MPRA_Real_tile_subset_ASE$REAL_TILE_Plus_carried_variants),]
         
@@ -1571,8 +1591,8 @@ corr.graphs = function(option_list)
           scale_y_discrete(name=NULL, drop=F)+
           theme(axis.text.x = element_text(angle = 45, vjust = 1, 
                                            size = 12, hjust = 1))+
-          geom_hline(yintercept = FINAL_COORDS, linetype=3, color="black")+
-          geom_vline(xintercept = FINAL_COORDS, linetype=3, color="black")+
+          geom_hline(yintercept = FINAL_COORDS, linetype=1, color="black")+
+          geom_vline(xintercept = FINAL_COORDS, linetype=1, color="black")+
           coord_fixed()
         
         
@@ -1720,6 +1740,9 @@ main = function() {
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--out"), type="character", default=NULL, 
+                metavar="out", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
                 metavar="out", 
                 help="Path to tab-separated input file listing regions to analyze. Required.")
   )

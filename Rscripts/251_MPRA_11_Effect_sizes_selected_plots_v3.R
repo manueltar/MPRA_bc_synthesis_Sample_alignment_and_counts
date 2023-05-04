@@ -65,11 +65,19 @@ graph_function_E_Plus_ASE = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   ### Read RAW data ----
   
   
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -94,7 +102,7 @@ graph_function_E_Plus_ASE = function(option_list)
   # quit(status = 1)
   
   
-  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_Vockley_REF",".rds", sep='')
+  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_ASE",".rds", sep='')
   
   
   Element_collapse<-readRDS(file=filename_1)
@@ -250,7 +258,7 @@ graph_function_E_Plus_ASE = function(option_list)
     }
     
     graph<-ggplot(Element_collapse_sel_lineage_sel, 
-                  aes(x=abs_Vockley_REF, 
+                  aes(x=abs_ASE, 
                       y=abs_finemap_z)) +
       geom_point(size=4) +
       theme(plot.title = element_text(size=11)) +
@@ -273,7 +281,7 @@ graph_function_E_Plus_ASE = function(option_list)
     
     setwd(path5)
     
-    svgname<-paste("GWAS_effect_size_vs_abs_Vockley_REF_",lineage_array_sel,"_E_Plus_ASE_AT_LEAST_ONE_CLASS",".svg",sep='')
+    svgname<-paste("GWAS_effect_size_vs_abs_ASE_",lineage_array_sel,"_E_Plus_ASE_AT_LEAST_ONE_CLASS",".svg",sep='')
     makesvg = TRUE
     
     if (makesvg == TRUE)
@@ -310,9 +318,15 @@ graph_function_enhancer = function(option_list)
   
   ### Read RAW data ----
   
+  #### READ and transform out2 ----
   
+  out2 = opt$out2
   
-  path5<-paste(out,'GWAS_plots','/', sep='')
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
+  path5<-paste(out2,'GWAS_plots','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -337,7 +351,7 @@ graph_function_enhancer = function(option_list)
   # quit(status = 1)
   
   
-  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_Vockley_REF",".rds", sep='')
+  filename_1<-paste("Element_collapse_Plus_Variant_Phenotypes_Plus_LogFC_ASE",".rds", sep='')
   
   
   Element_collapse<-readRDS(file=filename_1)
@@ -493,7 +507,7 @@ graph_function_enhancer = function(option_list)
     }
     
     graph<-ggplot(Element_collapse_sel_lineage_sel, 
-                  aes(x=abs_Vockley_REF, 
+                  aes(x=abs_ASE, 
                       y=abs_finemap_z)) +
       geom_point(size=4) +
       theme(plot.title = element_text(size=11)) +
@@ -516,7 +530,7 @@ graph_function_enhancer = function(option_list)
     
     setwd(path5)
     
-    svgname<-paste("GWAS_effect_size_vs_abs_Vockley_REF_",lineage_array_sel,"_enhancer_AT_LEAST_ONE_CLASS",".svg",sep='')
+    svgname<-paste("GWAS_effect_size_vs_abs_ASE_",lineage_array_sel,"_enhancer_AT_LEAST_ONE_CLASS",".svg",sep='')
     makesvg = TRUE
     
     if (makesvg == TRUE)
@@ -554,6 +568,9 @@ main = function() {
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--out"), type="character", default=NULL, 
+                metavar="type", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--TOME_correspondence"), type="character", default=NULL,

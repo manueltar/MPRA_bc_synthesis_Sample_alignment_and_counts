@@ -48,7 +48,13 @@ data_wrangling = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
   
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
   
   #### enhancer_result_K562 ----
   
@@ -465,7 +471,7 @@ data_wrangling = function(option_list)
   #### READ data ----
   
   
-  setwd(out)
+  setwd(out2)
   
   filename_1<-paste("list_medians_post_QC",".rds", sep='')
   
@@ -479,6 +485,7 @@ data_wrangling = function(option_list)
   str(medians_object)
   cat("\n")
   
+  setwd(out)
   
   filename=paste('Rosetta_extended','.rds',sep='')
   Rosetta_extended <-readRDS(file=filename)
@@ -643,7 +650,7 @@ data_wrangling = function(option_list)
     
     colnames(medians_object_sel)[which(colnames(medians_object_sel) == "median_Median_value")]<-"value"
     colnames(medians_object_sel)[which(colnames(medians_object_sel) == "median_LogFC")]<-"value"
-    colnames(medians_object_sel)[which(colnames(medians_object_sel) == "median_Vockley_REF")]<-"value"
+    colnames(medians_object_sel)[which(colnames(medians_object_sel) == "median_ASE")]<-"value"
     colnames(medians_object_sel)[which(colnames(medians_object_sel) == "median_dna.REF.vs.dna.ALT")]<-"value"
     colnames(medians_object_sel)[which(colnames(medians_object_sel) == "median_rna.REF.vs.rna.ALT")]<-"value"
     
@@ -740,7 +747,7 @@ data_wrangling = function(option_list)
   ####  SAVE ----
   
   
-  setwd(out)
+  setwd(out2)
   
   filename_1<-paste("MPRA_Real_Tile",".rds", sep='')
   
@@ -782,6 +789,14 @@ QC2_barplots_plots = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   #### READ and transform fdr_Threshold ----
   
   fdr_Threshold = opt$fdr_Threshold
@@ -793,7 +808,7 @@ QC2_barplots_plots = function(option_list)
   
   #### read RDS----
   
-  setwd(out)
+  setwd(out2)
   
   filename_1<-paste("MPRA_Real_Tile",".rds", sep='')
   
@@ -822,7 +837,7 @@ QC2_barplots_plots = function(option_list)
   
   #### path2 ----
   
-  path2<-paste(out,'QC2_Barplots','/', sep='')
+  path2<-paste(out2,'QC2_Barplots','/', sep='')
   
   cat("path2\n")
   cat(sprintf(as.character(path2)))
@@ -940,7 +955,7 @@ QC2_barplots_plots = function(option_list)
     cat(str(Freq.table_TOTAL))
     cat("\n")
     
-    setwd(out)
+    setwd(out2)
     
     write.table(Freq.table_TOTAL, file="TOTAL.txt",sep="\t",quote=F, row.names = F)
     
@@ -958,7 +973,7 @@ QC2_barplots_plots = function(option_list)
     cat(str(Freq.table_pool))
     cat("\n")
     
-    setwd(out)
+    setwd(out2)
     
     write.table(Freq.table_pool, file="Pool.txt",sep="\t",quote=F, row.names = F)
     
@@ -989,7 +1004,7 @@ QC2_barplots_plots = function(option_list)
     cat(str(Freq.table_pool))
     cat("\n")
     
-    setwd(out)
+    setwd(out2)
     
     write.table(Freq.table_pool, file="Pool_DEF.txt",sep="\t",quote=F, row.names = F)
     
@@ -1043,7 +1058,7 @@ QC2_barplots_plots = function(option_list)
     cat(str(Freq.table_Label))
     cat("\n")
     
-    setwd(out)
+    setwd(out2)
     
     write.table(Freq.table_Label, file="Label_DEF.txt",sep="\t",quote=F, row.names = F)
     
@@ -1109,6 +1124,14 @@ data_wrangling_after_QC2_plots = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   #### READ and transform fdr_Threshold ----
   
   fdr_Threshold = opt$fdr_Threshold
@@ -1143,31 +1166,31 @@ data_wrangling_after_QC2_plots = function(option_list)
   cat(sprintf(as.character(ASE_log_pval_Threshold)))
   cat("\n")
   
-  #### READ and transform Vockley_REF_Threshold ----
+  #### READ and transform ASE_Threshold ----
   
-  Vockley_REF_Threshold = as.numeric(unlist(strsplit(opt$Vockley_REF_Threshold, split=",")))
+  ASE_Threshold = as.numeric(unlist(strsplit(opt$ASE_Threshold, split=",")))
   
-  cat("Vockley_REF_Threshold_\n")
-  cat(sprintf(as.character(Vockley_REF_Threshold)))
+  cat("ASE_Threshold_\n")
+  cat(sprintf(as.character(ASE_Threshold)))
   cat("\n")
   
-  Vockley_REF_LOW<-Vockley_REF_Threshold[1]
+  ASE_LOW<-ASE_Threshold[1]
   
-  cat("Vockley_REF_LOW_\n")
-  cat(sprintf(as.character(Vockley_REF_LOW)))
+  cat("ASE_LOW_\n")
+  cat(sprintf(as.character(ASE_LOW)))
   cat("\n")
   
-  Vockley_REF_HIGH<-Vockley_REF_Threshold[2]
+  ASE_HIGH<-ASE_Threshold[2]
   
-  cat("Vockley_REF_HIGH_\n")
-  cat(sprintf(as.character(Vockley_REF_HIGH)))
+  cat("ASE_HIGH_\n")
+  cat(sprintf(as.character(ASE_HIGH)))
   cat("\n")
   
   
   
   #### read RDS----
   
-  setwd(out)
+  setwd(out2)
   
   filename_1<-paste("MPRA_Real_Tile",".rds", sep='')
   
@@ -1305,6 +1328,25 @@ data_wrangling_after_QC2_plots = function(option_list)
   cat(str(MPRA_Real_Tile_QC2_PASS_wide_subset))
   cat("\n")
   
+  ########################################## NO FILTER 
+  
+ 
+  MPRA_Real_Tile_NO_FILTER<-merge(MPRA_Real_Tile,
+                                  MPRA_Real_Tile_QC2_PASS_wide_subset,
+                                  by=c("REAL_TILE_Plus_carried_variants","Cell_Type"),
+                                  all=T)
+  
+  cat("MPRA_Real_Tile_NO_FILTER_0\n")
+  cat(str(MPRA_Real_Tile_NO_FILTER))
+  cat("\n")
+  
+  
+  
+  ########################################## FILTER 
+  
+  
+  
+  
   
   MPRA_Real_Tile_QC2_PASS_wide_subset_PASS<-MPRA_Real_Tile_QC2_PASS_wide_subset[which(MPRA_Real_Tile_QC2_PASS_wide_subset$QC2_CLASS == "PASS"),]
   
@@ -1384,7 +1426,7 @@ data_wrangling_after_QC2_plots = function(option_list)
   # 148 153 138 147
   
   
-  RESULTS_SIG_ASE<-MPRA_Real_Tile[which(MPRA_Real_Tile$variable == "Vockley_REF"),]
+  RESULTS_SIG_ASE<-MPRA_Real_Tile[which(MPRA_Real_Tile$variable == "ASE"),]
   
   cat("RESULTS_SIG_ASE_1\n")
   cat(str(RESULTS_SIG_ASE))
@@ -1405,10 +1447,10 @@ data_wrangling_after_QC2_plots = function(option_list)
   cat(str(RESULTS_SIG_ASE))
   cat("\n")
   
-  RESULTS_SIG_ASE_1<-RESULTS_SIG_ASE[which(RESULTS_SIG_ASE$value <= Vockley_REF_LOW),]
+  RESULTS_SIG_ASE_1<-RESULTS_SIG_ASE[which(RESULTS_SIG_ASE$value <= ASE_LOW),]
   
   
-  RESULTS_SIG_ASE_2<-RESULTS_SIG_ASE[which(RESULTS_SIG_ASE$value >= Vockley_REF_HIGH),]
+  RESULTS_SIG_ASE_2<-RESULTS_SIG_ASE[which(RESULTS_SIG_ASE$value >= ASE_HIGH),]
  
   RESULTS_SIG_ASE<-rbind(RESULTS_SIG_ASE_1,RESULTS_SIG_ASE_2)
   
@@ -1481,22 +1523,22 @@ data_wrangling_after_QC2_plots = function(option_list)
   cat(str(RESULTS_E_Plus_ASE_LogFC))
   cat("\n")
   
-  RESULTS_E_Plus_ASE_Vockley_REF<-MPRA_Real_Tile[which(MPRA_Real_Tile$variable == "Vockley_REF"),-c(indx.dep, which(colnames(MPRA_Real_Tile) == "variable"))]
+  RESULTS_E_Plus_ASE_ASE<-MPRA_Real_Tile[which(MPRA_Real_Tile$variable == "ASE"),-c(indx.dep, which(colnames(MPRA_Real_Tile) == "variable"))]
   
-  colnames(RESULTS_E_Plus_ASE_Vockley_REF)[which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "value")]<-"Vockley_REF"
+  colnames(RESULTS_E_Plus_ASE_ASE)[which(colnames(RESULTS_E_Plus_ASE_ASE) == "value")]<-"ASE"
   
-  cat("RESULTS_E_Plus_ASE_Vockley_REF\n")
-  cat(str(RESULTS_E_Plus_ASE_Vockley_REF))
+  cat("RESULTS_E_Plus_ASE_ASE\n")
+  cat(str(RESULTS_E_Plus_ASE_ASE))
   cat("\n")
   
   
-  indx.int<-c(which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "REAL_TILE_Plus_carried_variants"),
-              which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "Cell_Type"),
-              which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "logpval_enhancer_pval.empirical"),
-              which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "enhancer_logpval"),
-              which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "fdr"),
-              which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "ASE_logpval"),
-              which(colnames(RESULTS_E_Plus_ASE_Vockley_REF) == "QC2_CLASS"))
+  indx.int<-c(which(colnames(RESULTS_E_Plus_ASE_ASE) == "REAL_TILE_Plus_carried_variants"),
+              which(colnames(RESULTS_E_Plus_ASE_ASE) == "Cell_Type"),
+              which(colnames(RESULTS_E_Plus_ASE_ASE) == "logpval_enhancer_pval.empirical"),
+              which(colnames(RESULTS_E_Plus_ASE_ASE) == "enhancer_logpval"),
+              which(colnames(RESULTS_E_Plus_ASE_ASE) == "fdr"),
+              which(colnames(RESULTS_E_Plus_ASE_ASE) == "ASE_logpval"),
+              which(colnames(RESULTS_E_Plus_ASE_ASE) == "QC2_CLASS"))
   
   
   # RESULTS_E_Plus_ASE_wide<-as.data.frame(pivot_wider(RESULTS_E_Plus_ASE,
@@ -1505,8 +1547,8 @@ data_wrangling_after_QC2_plots = function(option_list)
   #                                                 values_from=value),stringsAsFactors=F)
   
   RESULTS_E_Plus_ASE_wide<-merge(RESULTS_E_Plus_ASE_LogFC,
-                                 RESULTS_E_Plus_ASE_Vockley_REF,
-                                 by=colnames(RESULTS_E_Plus_ASE_Vockley_REF)[indx.int])
+                                 RESULTS_E_Plus_ASE_ASE,
+                                 by=colnames(RESULTS_E_Plus_ASE_ASE)[indx.int])
 
   cat("RESULTS_E_Plus_ASE_wide_0\n")
   cat(str(RESULTS_E_Plus_ASE_wide))
@@ -1558,9 +1600,9 @@ data_wrangling_after_QC2_plots = function(option_list)
   }else{
     # quit(status = 1)
     
-    RESULTS_E_Plus_ASE_wide_1<-RESULTS_E_Plus_ASE_wide[which(RESULTS_E_Plus_ASE_wide$Vockley_REF >= Vockley_REF_HIGH),]
+    RESULTS_E_Plus_ASE_wide_1<-RESULTS_E_Plus_ASE_wide[which(RESULTS_E_Plus_ASE_wide$ASE >= ASE_HIGH),]
     
-    RESULTS_E_Plus_ASE_wide_2<-RESULTS_E_Plus_ASE_wide[which(RESULTS_E_Plus_ASE_wide$Vockley_REF <= Vockley_REF_LOW),]
+    RESULTS_E_Plus_ASE_wide_2<-RESULTS_E_Plus_ASE_wide[which(RESULTS_E_Plus_ASE_wide$ASE <= ASE_LOW),]
     
     
     RESULTS_E_Plus_ASE_wide<-rbind(RESULTS_E_Plus_ASE_wide_1,RESULTS_E_Plus_ASE_wide_2)
@@ -1686,9 +1728,28 @@ data_wrangling_after_QC2_plots = function(option_list)
   cat(str(MERGE_CLASS_subset))
   cat("\n")
   
+  ##### ALL TILES VERSION -----
+  
+  
+ 
+  MPRA_Real_Tile_NO_FILTER<-merge(MPRA_Real_Tile_NO_FILTER,
+                        MERGE_CLASS_subset,
+                        by=c("REAL_TILE_Plus_carried_variants","Cell_Type"),
+                        all=T)
+  
+  cat("MPRA_Real_Tile_NO_FILTER_1\n")
+  cat(str(MPRA_Real_Tile_NO_FILTER))
+  cat("\n")
+  
+  setwd(out2)
+  
+  saveRDS(MPRA_Real_Tile_NO_FILTER,file="MPRA_Real_Tile_QC2_NO_FILTERED.rds")
+  
+  
+  
   #### SAVE ACTIVE TILES AND MPRA_Real_Tile_QC2_PASS----
   
-  setwd(out)
+  setwd(out2)
   
   write.table(MERGE_CLASS_subset,file="ACTIVE_TILES.txt", sep="\t", quote=F,row.names = F)
   
@@ -1741,10 +1802,17 @@ volcano_graphs= function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
  
   #### Read ACTIVE TILES AND MPRA_Real_Tile_QC2_PASS----
   
-  setwd(out)
+  setwd(out2)
   
   MERGE_CLASS_subset<-read.table(file="ACTIVE_TILES.txt", sep="\t")
   
@@ -1765,7 +1833,7 @@ volcano_graphs= function(option_list)
   
   #### path2 ----
   
-  path2<-paste(out,'Volcano','/', sep='')
+  path2<-paste(out2,'Volcano','/', sep='')
   
   cat("path2\n")
   cat(sprintf(as.character(path2)))
@@ -1796,7 +1864,7 @@ volcano_graphs= function(option_list)
   cat(str(Cell_Types_vector))
   cat("\n")
   
-  represented_features<-c("dna_pool","rna_pool","dna.REF.vs.dna.ALT","rna.REF.vs.rna.ALT","LogFC","Vockley_REF")
+  represented_features<-c("dna_pool","rna_pool","dna.REF.vs.dna.ALT","rna.REF.vs.rna.ALT","LogFC","ASE")
   
   features<-unique(MPRA_Real_Tile$variable)
   
@@ -1819,7 +1887,7 @@ volcano_graphs= function(option_list)
   cat(str(df_representation_enhancer_logpval))
   cat("\n")
   
-  indx.int<-c(which(features == "dna.REF.vs.dna.ALT"),which(features == "rna.REF.vs.rna.ALT"),which(features == "Vockley_REF"))
+  indx.int<-c(which(features == "dna.REF.vs.dna.ALT"),which(features == "rna.REF.vs.rna.ALT"),which(features == "ASE"))
   
   
   df_representation_ASE_logpval<-as.data.frame(cbind(c(features[c(indx.int)]),rep("ASE_logpval",length(indx.int))), stringsAsFactors=F)
@@ -1861,7 +1929,7 @@ volcano_graphs= function(option_list)
     
     #### path3 ----
     
-    path3<-paste(out,'Volcano','/',Cell_Types_vector_sel,'/', sep='')
+    path3<-paste(out2,'Volcano','/',Cell_Types_vector_sel,'/', sep='')
     
     cat("path3\n")
     cat(sprintf(as.character(path3)))
@@ -1970,7 +2038,7 @@ volcano_graphs= function(option_list)
         
         
       }
-      if(features_sel == "Vockley_REF")
+      if(features_sel == "ASE")
       {
         cat("HELLO_WORLD_2\n")
         
@@ -2039,7 +2107,7 @@ volcano_graphs= function(option_list)
       #### Print Klaudia file ----
       #### path4
       
-      path4<-paste(out,'Volcano','/',Cell_Types_vector_sel,'/',yaxis_sel,'/', sep='')
+      path4<-paste(out2,'Volcano','/',Cell_Types_vector_sel,'/',yaxis_sel,'/', sep='')
       
       cat("path4\n")
       cat(sprintf(as.character(path4)))
@@ -2067,6 +2135,10 @@ volcano_graphs= function(option_list)
         
         
       X_parameter_array<-c("DEF_CLASS","factor4","Label","Label_2")
+      
+      cat("X_parameter_array:\t")
+      cat(str(X_parameter_array))
+      cat("\n")
       
       
       for(iteration_X_parameter_array in 1:length(X_parameter_array))
@@ -2164,13 +2236,20 @@ volcano_graphs= function(option_list)
         cat(str(selection_labels))
         cat("\n")
         
-        indx.selection<-which(REP$DEF_CLASS%in%selection_labels)
+        space_x_parameter<-REP[,indx_x_parameter_sel]
+        
+        cat("space_x_parameter\n")
+        cat(str(space_x_parameter))
+        cat("\n")
+        
+        
+        
+        indx.selection<-!is.na(space_x_parameter)
         
         cat("indx.selection\n")
         cat(str(indx.selection))
         cat("\n")
         
-       
         
         
         if(features_sel%in%OTHER_FEATURES)
@@ -2238,7 +2317,7 @@ volcano_graphs= function(option_list)
           # plot(log10(REP$value +0.000000001), REP[,indx.yaxis], ty="n", xlab=features_sel, ylab=ylabel, axes=F, cex.lab=1.2, cex.lab=1.3, xlim=c(breaks.log_value[1],breaks.log_value[length(breaks.log_value)]))
           # abline(v=v_parameter, col="black",lty=2,lwd=2)
           # 
-          # points(REP$value[ind], REP[,indx.yaxis][ind], col="darkgrey", pch=19)
+          # points(REP$value[ind], REP[,indx.yaxis][ind], col="darkgrey", pch=19,lwd=4)
           # 
           # sREP <- REP[-ind,]
           # 
@@ -2254,7 +2333,7 @@ volcano_graphs= function(option_list)
           #   cat("\n")
           #   
           #   
-          #   points(sREP$value[ind], sREP[,indx.yaxis][ind], pch=19, col=mycols[i])
+          #   points(sREP$value[ind], sREP[,indx.yaxis][ind], pch=19,lwd=4, col=mycols[i])
           # }
           # legend("topright", legend=lab, fill=mycols, border=mycols, bty="n")
           # axis(1, at=seq(breaks.log_value[1],breaks.log_value[length(breaks.log_value)]))
@@ -2264,7 +2343,7 @@ volcano_graphs= function(option_list)
           
         }# length(features_sel[which(features_sel%in%OTHER_FEATURES)])>1
         
-        if(features_sel == "Vockley_REF")
+        if(features_sel == "ASE")
         {
           cat("HELLO_WORLD_2_2\n")
           
@@ -2325,7 +2404,7 @@ volcano_graphs= function(option_list)
           plot(REP$value, REP[,indx.yaxis], ty="n", xlab=features_sel, ylab=ylabel, axes=F, cex.lab=1.2, cex.lab=1.3, xlim=c(breaks.value[1],breaks.value[length(breaks.value)]))
           abline(v=1, col="black",lty=2,lwd=2)
           
-          points(REP$value[ind], REP[,indx.yaxis][ind], col="darkgrey", pch=19)
+          points(REP$value[ind], REP[,indx.yaxis][ind], col="darkgrey", pch=19,lwd=4)
           
           sREP <- REP[-ind,]
           
@@ -2341,7 +2420,7 @@ volcano_graphs= function(option_list)
             cat("\n")
             
             
-            points(sREP$value[ind], sREP[,indx.yaxis][ind], pch=19, col=mycols[i])
+            points(sREP$value[ind], sREP[,indx.yaxis][ind], pch=19,lwd=4, col=mycols[i])
           }
           legend("topright", legend=lab, fill=mycols, border=mycols, bty="n")
           axis(1, at=seq(breaks.value[1],breaks.value[length(breaks.value)]))
@@ -2351,7 +2430,7 @@ volcano_graphs= function(option_list)
           
           
           
-        }#features_sel == "Vockley_REF"
+        }#features_sel == "ASE"
         
         if(features_sel == "LogFC")
         {
@@ -2422,7 +2501,7 @@ volcano_graphs= function(option_list)
           plot(REP$value, REP[,indx.yaxis], ty="n", xlab=features_sel, ylab=ylabel, axes=F, cex.lab=1.2, cex.lab=1.3, xlim=c(breaks.log_value[1],breaks.log_value[length(breaks.log_value)]))
           abline(v=v_parameter, col="black",lty=2,lwd=2)
           
-          points(REP$value[ind], REP[,indx.yaxis][ind], col="darkgrey", pch=19)
+          points(REP$value[ind], REP[,indx.yaxis][ind], col="darkgrey", pch=19,lwd=4)
           
           sREP <- REP[-ind,]
           
@@ -2438,7 +2517,7 @@ volcano_graphs= function(option_list)
             cat("\n")
             
             
-            points(sREP$value[ind], sREP[,indx.yaxis][ind], pch=19, col=mycols[i])
+            points(sREP$value[ind], sREP[,indx.yaxis][ind], pch=19,lwd=4, col=mycols[i])
           }
           legend("topleft", legend=lab, fill=mycols, border=mycols, bty="n")
           axis(1, at=seq(breaks.log_value[1],breaks.log_value[length(breaks.log_value)]))
@@ -2462,7 +2541,23 @@ volcano_graphs= function(option_list)
                  height=10, width=12)
         }
         
-       
+        # if(X_parameter_array_sel == "factor4")
+        # {
+        #   setwd(out2)
+        #   
+        #   svgname<-paste("volcano_",yaxis_sel,"_",features_sel,"_",X_parameter_array_sel,".svg",sep='')
+        #   makesvg = TRUE
+        #   
+        #   if (makesvg == TRUE)
+        #   {
+        #     ggsave(svgname, plot= volcano,
+        #            device="svg",
+        #            height=10, width=12)
+        #   }
+        #   
+        #   quit(status = 1)
+        #   
+        # }#
         
         
         
@@ -2528,7 +2623,7 @@ main = function() {
     make_option(c("--FC_Threshold"), type="numeric", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
-    make_option(c("--Vockley_REF_Threshold"), type="numeric", default=NULL, 
+    make_option(c("--ASE_Threshold"), type="numeric", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--enhancer_logval_Threshold"), type="numeric", default=NULL, 
@@ -2544,6 +2639,9 @@ main = function() {
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--out"), type="character", default=NULL, 
+                metavar="out", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
                 metavar="out", 
                 help="Path to tab-separated input file listing regions to analyze. Required.")
   )

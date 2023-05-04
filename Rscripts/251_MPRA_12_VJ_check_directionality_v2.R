@@ -33,15 +33,16 @@ opt = NULL
 
 options(warn = 1)
 
-Generating_count_matrix_NSCS = function(option_list)
+data_wrangling = function(option_list)
 {
   #### READ and transform type ----
   
   type = opt$type
   
-  cat("HELLOW_WORLD_1_TYPE_\n")
+  cat("TYPE_\n")
   cat(sprintf(as.character(type)))
   cat("\n")
+  
   
   
   #### READ and transform out ----
@@ -52,6 +53,30 @@ Generating_count_matrix_NSCS = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
+  path5<-paste(out2,'VJ_directionality','/', sep='')
+  
+  cat("path5\n")
+  cat(sprintf(as.character(path5)))
+  cat("\n")
+  
+  
+  if (file.exists(path5)){
+    
+    
+    
+    
+  } else {
+    dir.create(file.path(path5))
+    
+  }
   
   #### Sankaran MPRA variants ----
   
@@ -179,19 +204,7 @@ Generating_count_matrix_NSCS = function(option_list)
   cat("check_\n")
   str(check)
   cat("\n")
-  
-  #### KEY_collpase_Plus_Variant_lineage_CLASSIFICATION ----
-  
-  
-  KEY_collapse<-readRDS(file=opt$KEY_collpase_Plus_Variant_lineage_CLASSIFICATION)
-  
-  cat("KEY_collapse_0\n")
-  cat(str(KEY_collapse))
-  cat("\n")
-  cat(sprintf(as.character(names(summary(KEY_collapse$Label_2)))))
-  cat("\n")
-  cat(sprintf(as.character(summary(KEY_collapse$Label_2))))
-  cat("\n")
+ 
   
   #### MPRA Real Tile ----
   
@@ -235,13 +248,13 @@ Generating_count_matrix_NSCS = function(option_list)
   cat("\n")
   
   
-  MPRA_TILES_in_Sankaran_Vockley_REF<-MPRA_TILES_in_Sankaran[which(MPRA_TILES_in_Sankaran$variable == "Vockley_REF"),]
+  MPRA_TILES_in_Sankaran_ASE<-MPRA_TILES_in_Sankaran[which(MPRA_TILES_in_Sankaran$variable == "ASE"),]
   
-  cat("MPRA_TILES_in_Sankaran_Vockley_REF_\n")
-  cat(str(MPRA_TILES_in_Sankaran_Vockley_REF))
+  cat("MPRA_TILES_in_Sankaran_ASE_\n")
+  cat(str(MPRA_TILES_in_Sankaran_ASE))
   cat("\n")
   
-  Sankaran_DEF<-Sankaran_MPRA_Sig_subset_wide[which(Sankaran_MPRA_Sig_subset_wide$Carried_variants%in%MPRA_TILES_in_Sankaran_Vockley_REF$carried_variants),]
+  Sankaran_DEF<-Sankaran_MPRA_Sig_subset_wide[which(Sankaran_MPRA_Sig_subset_wide$Carried_variants%in%MPRA_TILES_in_Sankaran_ASE$carried_variants),]
   
   cat("Sankaran_DEF_\n")
   cat(str(Sankaran_DEF))
@@ -268,7 +281,7 @@ Generating_count_matrix_NSCS = function(option_list)
   ##### merge Sankaran and MPRA ----
   
   
-  DEF<-merge(MPRA_TILES_in_Sankaran_Vockley_REF,
+  DEF<-merge(MPRA_TILES_in_Sankaran_ASE,
              Sankaran_DEF_subset,
              by=c("VAR","Tile"))
   
@@ -319,7 +332,7 @@ Generating_count_matrix_NSCS = function(option_list)
   Cell_Type_array<-levels(DEF$Cell_Type)
   
   
-  path5<-paste(out,'VJ_directionality','/', sep='')
+  path5<-paste(out2,'VJ_directionality','/', sep='')
   
   cat("path5\n")
   cat(sprintf(as.character(path5)))
@@ -348,7 +361,7 @@ Generating_count_matrix_NSCS = function(option_list)
   {
     Cell_Type_array_sel<-Cell_Type_array[iteration_Cell_Type_array]
     
-    cat("--->:\n")
+    cat("--------------------------------------------------------------------------------------------------------------------------------->:\t")
     cat(sprintf(as.character(Cell_Type_array_sel)))
     cat("\n")
     
@@ -513,9 +526,9 @@ Generating_count_matrix_NSCS = function(option_list)
     graph<-ggplot(DEF_2, 
                   aes(x=value, 
                       y=Allelic_skew)) +
-      geom_point(size=4, color=color_sel)+
+      geom_point(size=8, color=color_sel)+
       theme_bw()+
-      scale_x_continuous(name="MPRA Vockley REF", breaks=breaks.x,labels=labels.x, limits=c(breaks.x[1],breaks.x[length(breaks.x)]))+
+      scale_x_continuous(name="MPRA ASE", breaks=breaks.x,labels=labels.x, limits=c(breaks.x[1],breaks.x[length(breaks.x)]))+
       scale_y_continuous(name="MPRA Sankaran Allelic Skew",breaks=breaks.y,labels=labels.y, limits=c(breaks.y[1],breaks.y[length(breaks.y)]))+
       theme(axis.title.y=element_text(size=24, family="sans"),
             axis.title.x=element_text(size=24, family="sans"),
@@ -523,18 +536,17 @@ Generating_count_matrix_NSCS = function(option_list)
             axis.text.x=element_text(angle=45,vjust=1,hjust=1,size=18, color="black", family="sans"),
             legend.title=element_text(size=16,color="black", family="sans"),
             legend.text=element_text(size=16,color="black", family="sans"))+
-      geom_vline(color="red",linetype="dotted", xintercept=1)+
-      geom_hline(color="red",linetype="dotted", yintercept=0)+
+      geom_vline(color="black",linetype="dashed", xintercept=1)+
+      geom_hline(color="black",linetype="dashed", yintercept=0)+
       ggeasy::easy_center_title()
     
-    list_graphs[[iteration_Cell_Type_array]]<-graph
+   
     list_LM[[iteration_Cell_Type_array]]<-A.df
+   
     
     setwd(path5)
     
-    
-    
-    svgname<-paste("Scatter_Vockley_REF_Allelic_Skew_",Cell_Type_array_sel,".svg",sep='')
+    svgname<-paste("Scatter_ASE_Allelic_Skew_",Cell_Type_array_sel,".svg",sep='')
     makesvg = TRUE
     
     if (makesvg == TRUE)
@@ -545,43 +557,13 @@ Generating_count_matrix_NSCS = function(option_list)
     }
     
    
+    cat("END_PRINT\n")
     
     
-    
-  }# iteration_Cell_Type_array
+  }# iteration_Cell_Type_array in 1:length(Cell_Type_array)
  
  
-  #### PRINT ALL ----
   
-  
-  setwd(path5)
-  
-  cat("svg_graph\n")
-  
- 
-  
-  K562_graph<-list_graphs[[1]]
-  CHRF_graph<-list_graphs[[2]]
-  HL60_graph<-list_graphs[[3]]
-  # THP1_graph<-list_graphs[[4]]
-  
-  
-  graph_DEF<-plot_grid(K562_graph,CHRF_graph,HL60_graph,NULL,
-                       nrow = 2,
-                       ncol = 2,
-                       labels=c("A) K-562","B) CHRF","C) HL-60","D) THP-1"),
-                       align = "hv")
-  
-  svgname<-paste("Graph_VJ_directionality",".svg", sep='')
-  makesvg = TRUE
-  
-  if (makesvg == TRUE)
-  {
-    
-    ggsave(svgname, plot= graph_DEF,
-           device="svg",
-           height=10, width=12)
-  }
   
   if(length(list_LM) >0)
   {
@@ -591,6 +573,8 @@ Generating_count_matrix_NSCS = function(option_list)
     cat("LM_DEF\n")
     cat(str(LM_DEF))
     cat("\n")
+    
+    setwd(path5)
     
     write.table(LM_DEF,file="LM_object.tsv",sep="\t",quote=F,row.names = F)
     
@@ -629,10 +613,10 @@ main = function() {
     make_option(c("--MPRA_Real_tile_QC2_PASS"), type="character", default=NULL, 
                 metavar="MPRA_Real_tile_QC2_PASS", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
-    make_option(c("--KEY_collpase_Plus_Variant_lineage_CLASSIFICATION"), type="character", default=NULL,
-                metavar="FILE.txt",
-                help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--out"), type="character", default=NULL, 
+                metavar="out", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
                 metavar="out", 
                 help="Path to tab-separated input file listing regions to analyze. Required.")
   )
@@ -646,7 +630,7 @@ main = function() {
                         option_list = option_list)
   opt <<- parse_args(parser)
   
-  Generating_count_matrix_NSCS(opt)
+  data_wrangling(opt)
   
 }
 

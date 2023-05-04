@@ -62,6 +62,14 @@ Parameter_recalculation = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   #### READ and transform K562_replicates ----
   
   K562_replicates<-unlist(strsplit(opt$K562_replicates_QC_PASS, ","))
@@ -1078,93 +1086,93 @@ Parameter_recalculation = function(option_list)
   cat("\n")
   
   
-  #### Vockley_REF ----
+  #### ASE ----
   
   
   
-  Vockley_REF_matrix<-(rna_condition_df_NOR_REF_wide.matrix+0.0000001/dna_condition_df_NOR_REF_wide.matrix+0.0000001)/(rna_condition_df_NOR_ALT_wide.matrix+0.0000001/dna_condition_df_NOR_ALT_wide.matrix+0.0000001)
+  ASE_matrix<-(rna_condition_df_NOR_ALT_wide.matrix+0.0000001/dna_condition_df_NOR_ALT_wide.matrix+0.0000001)/(rna_condition_df_NOR_REF_wide.matrix+0.0000001/dna_condition_df_NOR_REF_wide.matrix+0.0000001)
   
-  cat("--------------------------------------------------------------------------------------------->Vockley_REF_matrix\n")
-  cat(str(Vockley_REF_matrix))
+  cat("--------------------------------------------------------------------------------------------->ASE_matrix\n")
+  cat(str(ASE_matrix))
   cat("\n")
   
-  Vockley_REF_df<-as.data.frame(Vockley_REF_matrix, stringsAsFactors=F)
+  ASE_df<-as.data.frame(ASE_matrix, stringsAsFactors=F)
   
   
-  Vockley_REF_df$REAL_TILE_Plus_carried_variants<-row.names(Vockley_REF_df)
+  ASE_df$REAL_TILE_Plus_carried_variants<-row.names(ASE_df)
   
-  cat("Vockley_REF_df\n")
-  cat(str(Vockley_REF_df))
+  cat("ASE_df\n")
+  cat(str(ASE_df))
   cat("\n")
   
-  Vockley_REF_df.m<-melt(Vockley_REF_df, id.cols="REAL_TILE_Plus_carried_variants")
+  ASE_df.m<-melt(ASE_df, id.cols="REAL_TILE_Plus_carried_variants")
   
-  cat("Vockley_REF_df.m_1\n")
-  cat(str(Vockley_REF_df.m))
+  cat("ASE_df.m_1\n")
+  cat(str(ASE_df.m))
   cat("\n")
   
-  colnames(Vockley_REF_df.m)[which(colnames(Vockley_REF_df.m) == "variable")]<-"master_sample"
-  colnames(Vockley_REF_df.m)[which(colnames(Vockley_REF_df.m) == "value")]<-"Vockley_REF"
+  colnames(ASE_df.m)[which(colnames(ASE_df.m) == "variable")]<-"master_sample"
+  colnames(ASE_df.m)[which(colnames(ASE_df.m) == "value")]<-"ASE"
   
   
-  Vockley_REF_df.m$master_sample<-factor(Vockley_REF_df.m$master_sample,
+  ASE_df.m$master_sample<-factor(ASE_df.m$master_sample,
                                          levels=levels_master_samples,ordered=T)
   
   
-  cat("Vockley_REF_df.m_2\n")
-  cat(str(Vockley_REF_df.m))
+  cat("ASE_df.m_2\n")
+  cat(str(ASE_df.m))
   cat("\n")
   
-  Vockley_REF_df.m<-merge(Vockley_REF_df.m,
+  ASE_df.m<-merge(ASE_df.m,
                           Annot_DEF_subset,
                           by="master_sample")
   
   
-  cat("Vockley_REF_df.m_3\n")
-  cat(str(Vockley_REF_df.m))
+  cat("ASE_df.m_3\n")
+  cat(str(ASE_df.m))
   cat("\n")
   
   
   ### NO NA
   
-  Vockley_REF_df.m_NO_NA<-Vockley_REF_df.m[!is.na(Vockley_REF_df.m$Vockley_REF),]
+  ASE_df.m_NO_NA<-ASE_df.m[!is.na(ASE_df.m$ASE),]
   
   
-  cat("Vockley_REF_df.m_NO_NA_1\n")
-  cat(str(Vockley_REF_df.m_NO_NA))
+  cat("ASE_df.m_NO_NA_1\n")
+  cat(str(ASE_df.m_NO_NA))
   cat("\n")
   
   ### Infinite reverted
   
-  Vockley_REF_df.m_NO_NA$Vockley_REF[(is.infinite(Vockley_REF_df.m_NO_NA$Vockley_REF) &  Vockley_REF_df.m_NO_NA$Vockley_REF > 0)]<-60
+  ASE_df.m_NO_NA$ASE[(is.infinite(ASE_df.m_NO_NA$ASE) &  ASE_df.m_NO_NA$ASE > 0)]<-60
   
-  # Vockley_REF_df.m_NO_NA<-Vockley_REF_df.m_NO_NA[-(is.infinite(Vockley_REF_df.m_NO_NA$Vockley_REF) &  Vockley_REF_df.m_NO_NA$Vockley_REF < 0),]
+  # ASE_df.m_NO_NA<-ASE_df.m_NO_NA[-(is.infinite(ASE_df.m_NO_NA$ASE) &  ASE_df.m_NO_NA$ASE < 0),]
   
   
   
-  # Vockley_REF_df.m_NO_NA$Vockley_REF[(is.infinite(Vockley_REF_df.m_NO_NA$Vockley_REF) &  Vockley_REF_df.m_NO_NA$Vockley_REF < 0)]<--1*10000
+  # ASE_df.m_NO_NA$ASE[(is.infinite(ASE_df.m_NO_NA$ASE) &  ASE_df.m_NO_NA$ASE < 0)]<--1*10000
   
 
-  cat("Vockley_REF_df.m_NO_NA_2_infinite_reverted\n")
-  cat(str(Vockley_REF_df.m_NO_NA))
+  cat("ASE_df.m_NO_NA_2_infinite_reverted\n")
+  cat(str(ASE_df.m_NO_NA))
   cat("\n")
   
   
   
   
   
-  A<-summary(Vockley_REF_df.m_NO_NA$Vockley_REF)
+  A<-summary(ASE_df.m_NO_NA$ASE)
   
-  cat("summary_Vockley_REF\n")
+  cat("summary_ASE\n")
   cat(sprintf(as.character(names(A))))
   cat("\n")
   cat(sprintf(as.character(A)))
   cat("\n")
   
   
-  check<-Vockley_REF_df.m_NO_NA[which(Vockley_REF_df.m_NO_NA$Vockley_REF >1.2 | Vockley_REF_df.m_NO_NA$Vockley_REF <0.8),]
+  check<-ASE_df.m_NO_NA[which(ASE_df.m_NO_NA$ASE >1.2 | ASE_df.m_NO_NA$ASE <0.8),]
   
-  cat("check_Vockley_REF\n")
+  cat("check_ASE\n")
   cat(str(check))
   cat("\n")
   cat(sprintf(as.character(names(summary(check$master_sample)))))
@@ -1172,55 +1180,55 @@ Parameter_recalculation = function(option_list)
   cat(sprintf(as.character(summary(check$master_sample))))
   cat("\n")
   
-  A<-summary(check$Vockley_REF)
+  A<-summary(check$ASE)
   
-  cat("summary_Vockley_REF\n")
+  cat("summary_ASE\n")
   cat(sprintf(as.character(names(A))))
   cat("\n")
   cat(sprintf(as.character(A)))
   cat("\n")
   
   
-  check<-Vockley_REF_df.m_NO_NA[is.na(Vockley_REF_df.m_NO_NA$Vockley_REF),]
+  check<-ASE_df.m_NO_NA[is.na(ASE_df.m_NO_NA$ASE),]
   
   cat("check_2\n")
   cat(str(check))
   cat("\n")
   
   
-  List_values[['Vockley_REF']]<-Vockley_REF_df.m_NO_NA
+  List_values[['ASE']]<-ASE_df.m_NO_NA
   
-  Vockley_REF_df.m_NO_NA.dt<-data.table(Vockley_REF_df.m_NO_NA,
+  ASE_df.m_NO_NA.dt<-data.table(ASE_df.m_NO_NA,
                                         key=c("REAL_TILE_Plus_carried_variants","Cell_Type"))
   
-  Vockley_REF_median<-unique(as.data.frame(Vockley_REF_df.m_NO_NA.dt[,.(median_Vockley_REF=median(Vockley_REF)),
-                                                                     by=key(Vockley_REF_df.m_NO_NA.dt)],stringsAsFactors=F))
+  ASE_median<-unique(as.data.frame(ASE_df.m_NO_NA.dt[,.(median_ASE=median(ASE)),
+                                                                     by=key(ASE_df.m_NO_NA.dt)],stringsAsFactors=F))
   
   
-  cat("Vockley_REF_median_0\n")
-  cat(str(Vockley_REF_median))
+  cat("ASE_median_0\n")
+  cat(str(ASE_median))
   cat("\n")
   
-  List_medians[['Vockley_REF']]<-Vockley_REF_median
+  List_medians[['ASE']]<-ASE_median
   
   
-  check_Vockley_REF<-Vockley_REF_median[which(Vockley_REF_median$median_Vockley_REF >1.2 | Vockley_REF_median$median_Vockley_REF <0.8),]
+  check_ASE<-ASE_median[which(ASE_median$median_ASE >1.2 | ASE_median$median_ASE <0.8),]
   
-  cat("check_Vockley_REF_Vockley_REF\n")
-  cat(str(check_Vockley_REF))
+  cat("check_ASE_ASE\n")
+  cat(str(check_ASE))
   cat("\n")
-  cat(sprintf(as.character(names(summary(check_Vockley_REF$Cell_Type)))))
+  cat(sprintf(as.character(names(summary(check_ASE$Cell_Type)))))
   cat("\n")
-  cat(sprintf(as.character(summary(check_Vockley_REF$Cell_Type))))
+  cat(sprintf(as.character(summary(check_ASE$Cell_Type))))
   cat("\n")
-  # cat(sprintf(as.character(names(summary(as.factor(check_Vockley_REF$REAL_TILE_Plus_carried_variants))))))
+  # cat(sprintf(as.character(names(summary(as.factor(check_ASE$REAL_TILE_Plus_carried_variants))))))
   # cat("\n")
-  # cat(sprintf(as.character(summary(as.factor(check_Vockley_REF$REAL_TILE_Plus_carried_variants)))))
+  # cat(sprintf(as.character(summary(as.factor(check_ASE$REAL_TILE_Plus_carried_variants)))))
   # cat("\n")
   
-  A<-summary(check_Vockley_REF$median_Vockley_REF)
+  A<-summary(check_ASE$median_ASE)
   
-  cat("summary_median_Vockley_REF\n")
+  cat("summary_median_ASE\n")
   cat(sprintf(as.character(names(A))))
   cat("\n")
   cat(sprintf(as.character(A)))
@@ -1229,11 +1237,11 @@ Parameter_recalculation = function(option_list)
   
   
   
-  check_DEF<-check_LogFC[which(check_LogFC$REAL_TILE_Plus_carried_variants%in%check_Vockley_REF$REAL_TILE_Plus_carried_variants),]
+  check_DEF<-check_LogFC[which(check_LogFC$REAL_TILE_Plus_carried_variants%in%check_ASE$REAL_TILE_Plus_carried_variants),]
   
   
   
-  cat("check_DEF_Vockley_REF\n")
+  cat("check_DEF_ASE\n")
   cat(str(check_DEF))
   cat("\n")
   
@@ -1538,6 +1546,7 @@ Parameter_recalculation = function(option_list)
   
   ##### SAVE LISTS with parameters ----
   
+  setwd(out2)
   
   filename_1<-paste("list_values_post_QC",".rds", sep='')
   
@@ -1592,6 +1601,9 @@ main = function() {
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--out"), type="character", default=NULL, 
+                metavar="out", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
                 metavar="out", 
                 help="Path to tab-separated input file listing regions to analyze. Required.")
   )

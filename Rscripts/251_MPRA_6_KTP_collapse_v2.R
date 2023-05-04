@@ -53,6 +53,14 @@ CLASSIFICATION_AT = function(option_list)
   cat(sprintf(as.character(out)))
   cat("\n")
   
+  #### READ and transform out2 ----
+  
+  out2 = opt$out2
+  
+  cat("out2_\n")
+  cat(sprintf(as.character(out2)))
+  cat("\n")
+  
   #### Categories colors ----
   
   
@@ -198,7 +206,7 @@ CLASSIFICATION_AT = function(option_list)
   
   
   
-  setwd(out)
+  setwd(out2)
   
   write.table(ACTIVE_TILES_Fq_E_Plus_ASE_Fq,file="test.tsv",sep="\t",quote=F,row.names=F)
   
@@ -298,10 +306,10 @@ CLASSIFICATION_AT = function(option_list)
   cat(str(KEY_collapse))
   cat("\n")
   
-  KEY_collapse<-merge(KEY_collapse,
+  KEY_collapse<-unique(merge(KEY_collapse,
                       ACTIVE_TILES_Fq_E_Plus_ASE_Fq,
                       by=c("KEY_Plus_carried_variants","Cell_Type"),
-                      all=T)
+                      all=T))
   
   KEY_collapse$E_Plus_ASE_CLASS_TILES[is.na(KEY_collapse$E_Plus_ASE_CLASS_TILES)]<-0
   KEY_collapse$E_Plus_ASE_CLASS[is.na(KEY_collapse$E_Plus_ASE_CLASS)]<-"0"
@@ -311,14 +319,46 @@ CLASSIFICATION_AT = function(option_list)
                                         levels = c("0","1","2","3 or >"),
                                         ordered=T)
   
-  
+   
   cat("KEY_collapse_2\n")
   cat(str(KEY_collapse))
   cat("\n")
+  cat(str(unique(KEY_collapse$KEY_Plus_carried_variants)))
+  cat("\n")
   
+  
+  ### collapse Factor4 ----
+  
+  KEY_collapse<-KEY_collapse[order(KEY_collapse$KEY_Plus_carried_variants, KEY_collapse$factor4),]
+  
+  KEY_collapse.dt<-data.table(KEY_collapse, key="KEY_Plus_carried_variants")
+  
+  
+  KEY_collapse_Factor4_collapse<-as.data.frame(KEY_collapse.dt[,.(factor4_CLASS=paste(unique(factor4), collapse=";")),by= key(KEY_collapse.dt)], stringsAsFactors=F)
  
+  cat("KEY_collapse_Factor4_collapse_3\n")
+  cat(str(KEY_collapse_Factor4_collapse))
+  cat("\n")
+  cat(str(unique(KEY_collapse_Factor4_collapse$KEY_Plus_carried_variants)))
+  cat("\n")
+  cat(sprintf(as.character(names(summary(as.factor(KEY_collapse_Factor4_collapse$factor4_string))))))
+  cat("\n")
+  cat(sprintf(as.character(summary(as.factor(KEY_collapse_Factor4_collapse$factor4_string)))))
+  cat("\n")
   
-  KEY_collapse<-unique(KEY_collapse[,-which(colnames(KEY_collapse) == "factor4")])
+  
+  KEY_collapse<-unique(merge(KEY_collapse[,-which(colnames(KEY_collapse) == "factor4")],
+                      KEY_collapse_Factor4_collapse,
+                      by="KEY_Plus_carried_variants",
+                      all=T))
+  
+  cat("KEY_collapse_3\n")
+  cat(str(KEY_collapse))
+  cat("\n")
+  cat(str(unique(KEY_collapse$KEY_Plus_carried_variants)))
+  cat("\n")
+  
+  
   
   
   KEY_collapse_NCGR<-KEY_collapse[which(KEY_collapse$VEP_DEF_LABELS == "NCGR"),]
@@ -418,7 +458,7 @@ CLASSIFICATION_AT = function(option_list)
   
   ######### SAVE THE COLLAPSED KEY -----
   
-  setwd(out)
+  setwd(out2)
   
   filename<-paste('Element_collapse','.rds',sep='')
   
@@ -436,6 +476,9 @@ CLASSIFICATION_AT = function(option_list)
   
   saveRDS(df.color_Cell_Type,file=filename)
  
+  
+  # ############################################### HERE HERE
+  # quit(status = 1)
 }
 
 
@@ -462,6 +505,9 @@ main = function() {
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--out"), type="character", default=NULL, 
+                metavar="type", 
+                help="Path to tab-separated input file listing regions to analyze. Required."),
+    make_option(c("--out2"), type="character", default=NULL, 
                 metavar="type", 
                 help="Path to tab-separated input file listing regions to analyze. Required."),
     make_option(c("--MPRA_Real_tile_QC2_PASS"), type="character", default=NULL, 
