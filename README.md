@@ -30,8 +30,8 @@ for R10_6_gDNA R10_6_gDNA_R2.fastq.gz is the file with UMIs . Umi-tools extract 
 
 ## SOFTWARE DEPENDENCIES FOR SAMPLE PROCESSING
 
--Trimmomatic-0.39 (change the path in the script)
--umi_tools version: 1.1.1 (change the path in the script)
+-Trimmomatic-0.39
+-umi_tools version: 1.1.1
 -flash2 v2.2.00
 -bwa
 -samtools
