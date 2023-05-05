@@ -1,0 +1,4 @@
+CHRF_R1_cDNA_S9_L001_R1_001.fastq.gz	CHRF_R1_cDNA_S9_L002_R1_001.fastq.gz	CHRF_R1_cDNA_R1.fastq.gz
+CHRF_R1_cDNA_S9_L001_R2_001.fastq.gz	CHRF_R1_cDNA_S9_L002_R2_001.fastq.gz	CHRF_R1_cDNA_R2.fastq.gz
+CHRF_R1_cDNA_S9_L001_R3_001.fastq.gz	CHRF_R1_cDNA_S9_L002_R3_001.fastq.gz	CHRF_R1_cDNA_R3.fastq.gz
+CHRF_R1_cDNA_S9_L001_I1_001.fastq.gz	CHRF_R1_cDNA_S9_L002_I1_001.fastq.gz	CHRF_R1_cDNA_I1.fastq.gz
