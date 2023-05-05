@@ -152,7 +152,7 @@ echo "LINE:$line"
 	#### This step extracts the UMI from the UMI read file (R2) and adds it to R1 file
 
 	type=$(echo "Extracting_UMI_R1")
-	outfile_Extracting_UMI_R1=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+	outfile_Extracting_UMI_R1=$(echo "$Log_files_path""outfile""_""$type""_""$name_sample"".out")
 	touch $outfile_Extracting_UMI_R1
 	echo -n "" > $outfile_Extracting_UMI_R1
 	name_Extracting_UMI_R1=$(echo "$batch""_""$type""_""$name_sample""_job")
@@ -161,14 +161,14 @@ echo "LINE:$line"
 
 
 	echo "bsub -G team151 -o $outfile_Extracting_UMI_R1 -M $mem -w\"done($name_trimmomatic)\" -J $name_Extracting_UMI_R1 -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
-	echo "\"umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$R1 --stdout=$output_processed_R1 --read2-stdout\"" >> $output
+	echo "\"/nfs/team151/software/umi-tools/bin/umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$R1 --stdout=$output_processed_R1 --read2-stdout\"" >> $output
 
 	#### This step extracts the UMI from the UMI read file (R2) and adds it to the processed R3 file
 	
 	echo -e "\n"  >> $output
 	
 	type=$(echo "Extracting_UMI_R3")
-	outfile_Extracting_UMI_R3=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+	outfile_Extracting_UMI_R3=$(echo "$Log_files_path""outfile""_""$type""_""$name_sample"".out")
 	touch $outfile_Extracting_UMI_R3
 	echo -n "" > $outfile_Extracting_UMI_R3
 	name_Extracting_UMI_R3=$(echo "$batch""_""$type""_""$name_sample""_job")
@@ -178,7 +178,7 @@ echo "LINE:$line"
 
 
 	echo "bsub -G team151 -o $outfile_Extracting_UMI_R3 -M $mem -w\"done($name_trimmomatic)\" -J $name_Extracting_UMI_R3 -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -n$pc -q $queue -- \\" >> $output
-	echo "\"umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$output_trimmomatic_r3 --stdout=$output_processed_R3 --read2-stdout\"" >> $output
+	echo "\"/nfs/team151/software/umi-tools/bin/umi_tools extract --bc-pattern=NNNNNNNNNN --stdin=$UMI --read2-in=$output_trimmomatic_r3 --stdout=$output_processed_R3 --read2-stdout\"" >> $output
 
 
 	echo -e "\n"  >> $output
@@ -186,7 +186,7 @@ echo "LINE:$line"
 	# This step merges the UMI added processed_R1 and the UMI added processed_R3, both of them should contain the 11 bp barcode of the MPRA each one in one orientation
 
 	 type=$(echo "R1_R3_merging")
-        outfile_merging=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+        outfile_merging=$(echo "$Log_files_path""outfile""_""$type""_""$name_sample"".out")
         touch $outfile_merging
         echo -n "" > $outfile_merging
          name_merging=$(echo "$batch""_""$type""_""$name_sample""_job")
@@ -194,10 +194,11 @@ echo "LINE:$line"
 	
 	
 	echo "bsub -G team151 -o $outfile_merging -q normal -n$pc -w\"done($name_Extracting_UMI_R1) && done($name_Extracting_UMI_R3)\" -J $name_merging -M $mem -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -- \\"  >> $output
-        echo "\"flash2 -z --output-prefix=$master_prefix -t 1 -r 11 -f 11 -s 2 -m 10 -x 0.122 $output_processed_R1 $output_processed_R3\"" >> $output
+        echo "\"flash2 -z --output-prefix=$master_prefix -d $output_dir -t 1 -r 11 -f 11 -s 2 -m 10 -x 0.122 $output_processed_R1 $output_processed_R3\"" >> $output
 	
 	echo -e "\n"  >> $output
 
+#	exit
 	# This step removes the first set of intermediate files
 	
         type=$(echo "CLEANING_1")
@@ -215,7 +216,7 @@ echo "LINE:$line"
 	# This is the aligning step with bwa aln to match the 11 bp barcode to the respective regulatory sequence
 
 	type=$(echo "aligning")
-        outfile_aligning=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+        outfile_aligning=$(echo "$Log_files_path""outfile""_""$type""_""$name_sample"".out")
         touch $outfile_aligning
         echo -n "" > $outfile_aligning
         name_aligning=$(echo "$batch""_""$type""_""$name_sample""_job")
@@ -232,11 +233,11 @@ echo "LINE:$line"
 	# This step converts the sai format to sam
 	
 	type=$(echo "converting_and_filtering")
-        outfile_converting=$(echo "$output_dir""outfile""_""$type""_""$name_sample"".out")
+        outfile_converting=$(echo "$Log_files_path""outfile""_""$type""_""$name_sample"".out")
         touch $outfile_converting
         echo -n "" > $outfile_converting
         name_converting=$(echo "$batch""_""$type""_""$name_sample""_job")
-	REFERENCE=$(echo "/lustre/scratch115/teams/soranzo/projects/NEW_MPRA/reference_files/Library_TRIMMED_15bp_Carried_Variants.fasta")
+	REFERENCE=$(echo $dependencies_folder"Library_TRIMMED_15bp_Carried_Variants.fasta")
 	flash2_output=$(echo "$output_dir""$master_prefix"".extendedFrags.fastq.gz")
 	sam_output=$(echo "$output_dir""$master_prefix"".sam")
 
@@ -268,7 +269,7 @@ echo "LINE:$line"
 
 	
 	echo "bsub -G team151 -o $outfile_converting -q normal -n$pc -w\"done($name_sam_to_bam)\" -J $name_filter_and_rest -M $mem -R\"select[mem>=$mem] rusage[mem=$mem] span[hosts=1]\" -- \\"  >> $output
-        echo "\"bash $bash_subscript $path_to_leave_output_files $batch $mem $pc $queue $master_prefix $name_sample\"" >> $output
+        echo "\"bash $bash_subscript $path_to_leave_output_files $Log_files_path $batch $mem $pc $queue $master_prefix $name_sample\"" >> $output
 
         echo -e "\n"  >> $output
 
@@ -296,7 +297,7 @@ echo "LINE:$line"
 done < "$sample_file"
 
 
-#bash $output
+bash $output
 
 
 
