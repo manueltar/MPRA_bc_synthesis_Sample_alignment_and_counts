@@ -214,7 +214,7 @@ echo "-------------------------------->$batch-------------------->""$master_pref
         type=$(echo "CLEANING_3")
         name_CLEANING=$(echo "$batch""_""$type""_""$name_sample""_job")
 
-#        bsub -G team151 -o $outfile_BASHING -M 4000  -w"done($name_Deduplicated_compress)" -J $name_CLEANING  -R"select[mem>=4000] rusage[mem=4000] span[hosts=1]" -n1 -q $queue -- \
-#        "rm $output_umi_tools_group $output_umi_summary $output_umi_tools_deduplicated_sorted"
+        bsub -G team151 -o $outfile_BASHING -M 4000  -w"done($name_Deduplicated_compress)" -J $name_CLEANING  -R"select[mem>=4000] rusage[mem=4000] span[hosts=1]" -n1 -q $queue -- \
+        "rm $output_umi_tools_group $output_umi_summary $output_umi_tools_deduplicated_sorted"
 
 
