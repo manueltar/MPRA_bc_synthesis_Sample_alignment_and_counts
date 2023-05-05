@@ -36,7 +36,12 @@ echo -n "" > $outfile_BASHING
 echo "-------------------------------->$batch-------------------->""$master_prefix""-------------------->""$name_sample"
 
     
-# This step filters out all reads that have one mismatch with the 11bp barcode in the reference
+# This step filters out all reads that have any changes comprared to the 11bp barcode in the reference to which they align
+# https://sourceforge.net/p/bio-bwa/mailman/message/26514149/
+# > NM      Number of nucleotide differences (i.e. edit distance to the 
+# > reference sequence). Edit distance equals the sum of mismatches, gap 
+# > opens and gap extensions. Mismatches or gaps in clipped sequences are 
+# > not counted.
 
         type=$(echo "filtering_2")
         name_filtering_2=$(echo "$batch""_""$type""_""$name_sample""_job")
